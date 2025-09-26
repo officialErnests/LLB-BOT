@@ -1,4 +1,5 @@
 from util import *
 import cv2
 
-test()
+bot1 = llb_bot()
+bot1.run()

@@ -7,34 +7,53 @@ import pygetwindow
 
 
 class llb_bot:
-    windows = pygetwindow.getWindowsWithTitle("LLBlaze")[0]
-    img_test = cv.imread('testimg/test2.png',cv.IMREAD_UNCHANGED)
+    windows = None
+    img_test = cv.imread('testimg/test4.png',cv.IMREAD_UNCHANGED)
     img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
     w, h = img_ball.shape[1::-1]
     coolRect = None
-    def __init__(self):
-        pass
+    window_set = False
+    def __init__(self, windowName):
+        if len(pygetwindow.getWindowsWithTitle(windowName)):
+            self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
+            self.window_set = True
+        
     def run(self):
+        x = 0
         while (True):
-            self.coolRect = self.windows._getWindowRect()
-            # print(self.coolRect)
-            #What an beutifull code :))
-            
-            screenshot = pyautogui.screenshot()\
-                .crop((self.coolRect.left,
-                        self.coolRect.top,
-                        self.coolRect.right,
-                        self.coolRect.bottom))
-            open_cv_image = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
-            print(open_cv_image)
-            result = cv.matchTemplate(open_cv_image, self.img_ball, cv.TM_CCOEFF_NORMED)
-            min_val, max_val, min_loc, max_loc = cv.minMaxLoc(result)
-            # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
-            top_left = max_loc
-            bottom_right = (top_left[0] + self.w, top_left[1] + self.h)
-            cv.rectangle(result,top_left, bottom_right, 255, 2)
-            time.sleep(0.1)
-            cv.imshow('funn.',result)
+            x+=1
+            img_hsv_value = None
+            if self.window_set:
+                self.coolRect = self.windows._getWindowRect()
+                # print(self.coolRect)
+                #What an beutifull code :))
+                
+                screenshot = pyautogui.screenshot()\
+                    .crop((self.coolRect.left,
+                            self.coolRect.top,
+                            self.coolRect.right,
+                            self.coolRect.bottom))
+                open_cv_screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
+                img_hsv_value = cv.cvtColor(open_cv_screenshot, cv.COLOR_BGR2HSV)
+            else:
+                img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
+            #209, 95, 100
+            #Why does it have 0-179
+            #Also why is it default GBR
+            #at the end i spend like 3min manualy homing in :))
+            mask_upper = np.array([105, 244, 255])
+            mask_lower = np.array([105, 243, 255])
+            masked_screenshot = cv.inRange(img_hsv_value, mask_lower, mask_upper)
+            # time.sleep(0.1)
+            contours, hierarchy = cv.findContours(masked_screenshot,
+                      cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+            # cv.findContours(masked_screenshot, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE, countours)
+            # print(contours)
+            # cv.rectangle(masked_screenshot,contours, bottom_right, 255, 2)
+            movement = cv.moments(contours)
+            movement_point = 
+            cv.putText(masked_screenshot, str(x), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 4)
+            cv.imshow('funn.',movement)
             if cv.waitKey(1) == ord('q'):
                 cv.destroyAllWindows()
                 break

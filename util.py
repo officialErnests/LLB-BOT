@@ -9,20 +9,19 @@ class llb_bot:
     img_test = cv.imread('testimg/test2.png',cv.IMREAD_UNCHANGED)
     img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
     w, h = img_ball.shape[1::-1]
-    top = 0
-    left = 0
-    width = 0
-    height = 0
+    coolRect = None
     def __init__(self):
         pass
     def run(self):
         while (True):
-            top, left = self.windows._getWindowRect()
-            bottom, right = self.windows.bottomright
-            print(self.windows)
+            self.coolRect = self.windows._getWindowRect()
+            print(self.coolRect)
+            #What an beutifull code :))
             screenshot = pyautogui.screenshot()\
-                .crop((0, 0,self.left + self.width, self.height))
-                # .crop((self.left, self.top, self.right, self.bottom))
+                .crop((self.coolRect.left,
+                        self.coolRect.top,
+                        self.coolRect.right,
+                        self.coolRect.bottom))
             open_cv_image = screenshot
             open_cv_image = np.array(screenshot)
             open_cv_image = cv.cvtColor(open_cv_image, cv.COLOR_RGB2BGR)

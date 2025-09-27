@@ -64,7 +64,11 @@ class ball_class:
             color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
             # print(str(self.last_positions))
             #WHY
-            pts = np.array(self.last_positions)
+            cool_array = []
+            for vec2D in self.last_positions:
+                cool_array.append(vec2D.arr())
+            print(cool_array)
+            pts = np.array(cool_array)
             image = cv.polylines(image, [pts], 
                       False, color, 2)
 
@@ -82,7 +86,7 @@ class gamedata:
     game_start = False
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos, [], 3)
+        self.ball = ball_class(ball_pos, [], 10)
         # TODO
         # for player in players:
         #     self.players.append(player)

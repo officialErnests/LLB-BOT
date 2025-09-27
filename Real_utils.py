@@ -8,3 +8,5 @@ class vector2D():
         return "<"+str(self.x)+"; "+str(self.y)+">"
     def __repr__(self):
         return [self.x, self.y]
+    def arr(self):
+        return [self.x, self.y]

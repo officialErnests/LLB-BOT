@@ -3,7 +3,8 @@ import pyautogui
 import numpy as np
 import time
 import pygetwindow
-from enum import Enum
+from LLBlaze import *
+from Real_utils import *
 
 class window_cut:
     top = 31
@@ -11,71 +12,6 @@ class window_cut:
     bottom = 7
     left = 7
 
-#really util for real XD
-class vector2D():
-    x = 0
-    y = 0
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-#Stage set
-class stage:
-    top = 0
-    left = 0
-    bottom = 0
-    right = 0
-    def __init__(self, left, top, right, bottom):
-        self.left = left
-        self.top = top
-        self.right = right
-        self.bottom = bottom
-    
-    @classmethod
-    def from_vector2d(self, vector2d : vector2D):
-        self.top = vector2d.y
-        self.bottom = vector2d.y
-        self.left = vector2d.x
-        self.right = vector2d.x
-
-#Ball classes
-class ball_states(Enum):
-    NEUTRAL = 0
-    RED = 1
-    BLUE = 2
-
-class ball_class:
-    state : ball_states
-    position : vector2D = None
-    def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL):
-        self.position = position
-        self.state = state
-
-# TODO
-#Charecter class
-class charecters(Enum):
-    Stitch = 0
-    Switch = 1
-
-class player_class:
-    position : vector2D = None
-    charecter = None
-    def __init__(self, position, character):
-        self.position = position
-        self.character = character
-
-class gamedata:
-    stage = None
-    ball = None
-    players = []
-    game_start = False
-    def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
-        self.stage = stage.from_vector2d(ball_pos, ball_pos)
-        self.ball = ball_class(ball_pos)
-        # TODO
-        for player in players:
-            self.players.append(player)
-    
 class llb_bot:
     windows = None
     img_test = cv.imread('testimg/test1.png',cv.IMREAD_UNCHANGED)
@@ -83,13 +19,14 @@ class llb_bot:
     w, h = img_ball.shape[1::-1]
     coolRect = None
     window_set = False
-    ball_state = 0
+
     game = gamedata(vector2D(100,100))
+
     def __init__(self, windowName):
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
-        
+    
     def run(self):
         x = 0
         while (True):
@@ -113,7 +50,7 @@ class llb_bot:
                 img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
                 start_img = self.img_test
             
-            self.ball_state = 0
+            self.game.ball.state = 0
 
             #BLUE
             self.get_color(start_img, img_hsv_value, 1,
@@ -123,7 +60,7 @@ class llb_bot:
             self.get_color(start_img, img_hsv_value, 2,
                                     np.array([5, 230, 255]),
                                     np.array([5, 229, 255]))
-            match self.ball_state:
+            match self.game.ball.state:
                 case 1:
                     cv.putText(start_img, "Blue ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 4)
                     pass
@@ -133,7 +70,7 @@ class llb_bot:
                 case _:
                     cv.putText(start_img, "No ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
                     pass
-            
+            self.game.update()
             cv.imshow('funn.',start_img)
             if cv.waitKey(1) == ord('q'):
                 cv.destroyAllWindows()
@@ -150,6 +87,6 @@ class llb_bot:
             cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
             cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
             cv.circle(start_img, (cX, cY), 5, color, -1)
-            cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cX), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, color, 4)
-            self.ball_state = ball_stage
-            self.ball_position = (cX, cY)
+            cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cY), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, color, 4)
+            self.game.ball.state = ball_stage
+            self.game.ball.position = vector2D(cX, cY)

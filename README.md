@@ -16,6 +16,8 @@ Leathal league blaze bot using opencv :))
 5. https://answers.opencv.org/question/204175/how-to-get-boundry-and-center-information-of-a-mask
 6. https://docs.opencv.org/4.x/d0/d49/tutorial_moments.html
 7. https://www.geeksforgeeks.org/python/python-opencv-find-center-of-contour
+8. https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html
+9. https://realpython.com/python-multiple-constructors/
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

@@ -10,14 +10,54 @@ class window_cut:
     bottom = 7
     left = 7
 
+class stage:
+    top = 0
+    left = 0
+    bottom = 0
+    right = 0
+    def __init__(self, left, top, right, bottom):
+        self.left = left
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+
+class vector2D():
+    x = 0
+    y = 0
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class ball_class:
+    position : vector2D = None
+    def __init__(self, position):
+        self.position = position
+
+class player_class:
+    position : vector2D = None
+    charecter = None
+    def __init__(self, position, character):
+        self.position = position
+        self.character = character
+
+class gamedata:
+    stage = None
+    ball = None
+    players = []
+    def __init__(self, ball_pos : vector2D, ):
+        pass
+
+    
+    
 class llb_bot:
     windows = None
-    img_test = cv.imread('testimg/test2.png',cv.IMREAD_UNCHANGED)
+    img_test = cv.imread('testimg/test1.png',cv.IMREAD_UNCHANGED)
     img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
     w, h = img_ball.shape[1::-1]
     coolRect = None
     window_set = False
     ball_state = 0
+    ball_position = 0
     def __init__(self, windowName):
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
@@ -46,52 +86,43 @@ class llb_bot:
                 img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
                 start_img = self.img_test
             
-            ball_state = 0
+            self.ball_state = 0
 
-            #BLUE BALL
-            mask_upper_blue = np.array([105, 244, 255])
-            mask_lower_blue = np.array([105, 243, 255])
-            masked_screenshot_blue = cv.inRange(img_hsv_value, mask_lower_blue, mask_upper_blue)
-
-            ret,thresh = cv.threshold(masked_screenshot_blue,254,255,0)
-            movement = cv.moments(thresh)
-            if movement['m00'] > 0:
-                cX = int(movement["m10"] / movement["m00"])
-                cY = int(movement["m01"] / movement["m00"])
-                cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
-                cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
-                cv.circle(start_img, (cX, cY), 5, (255, 255, 0), -1)
-                cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cX), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 4)
-                ball_state = 1
-            ret,thresh = cv.threshold(masked_screenshot_blue,254,255,0)
-
-            
-            match ball_state:
+            #BLUE
+            self.get_color(start_img, img_hsv_value, 1,
+                                    np.array([105, 244, 255]),
+                                    np.array([105, 243, 255]))
+            #RED
+            self.get_color(start_img, img_hsv_value, 2,
+                                    np.array([5, 230, 255]),
+                                    np.array([5, 229, 255]))
+            match self.ball_state:
                 case 1:
                     cv.putText(start_img, "Blue ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 4)
+                    pass
                 case 2:
                     cv.putText(start_img, "Red ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 4)
+                    pass
                 case _:
                     cv.putText(start_img, "No ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
+                    pass
             
             cv.imshow('funn.',start_img)
             if cv.waitKey(1) == ord('q'):
                 cv.destroyAllWindows()
                 break
     
-    def get_color():
-            #RED BALL
-            mask_upper_red = np.array([5, 230, 255])
-            mask_lower_red = np.array([5, 229, 255])
-            masked_screenshot_red = cv.inRange(img_hsv_value, mask_lower_red, mask_upper_red)
-            
-            ret,thresh2 = cv.threshold(masked_screenshot_red,254,255,0)
-            movement2 = cv.moments(thresh2)
-            if movement2['m00'] > 0:
-                cX = int(movement2["m10"] / movement2["m00"])
-                cY = int(movement2["m01"] / movement2["m00"])
-                cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
-                cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
-                cv.circle(start_img, (cX, cY), 5, (0, 0, 255), -1)
-                cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cX), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 4)
-                ball_state = 2
+    def get_color(self, start_img, hsv_img, ball_stage, mask_upper_red, mask_lower_red):
+        color = (255, 255, 0) if ball_stage == 1 else (0, 0, 255)
+        masked_screenshot = cv.inRange(hsv_img, mask_lower_red, mask_upper_red)
+        ret,thresh = cv.threshold(masked_screenshot,254,255,0)
+        movement = cv.moments(thresh)
+        if movement['m00'] > 0:
+            cX = int(movement["m10"] / movement["m00"])
+            cY = int(movement["m01"] / movement["m00"])
+            cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
+            cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
+            cv.circle(start_img, (cX, cY), 5, color, -1)
+            cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cX), (100,100), cv.FONT_HERSHEY_SIMPLEX, 1, color, 4)
+            self.ball_state = ball_stage
+            self.ball_position = (cX, cY)

@@ -1,6 +1,7 @@
 from enum import Enum
 from Real_utils import *
 import cv2 as cv
+import numpy as np
 
 #enums
 class ball_states(Enum):
@@ -54,18 +55,18 @@ class ball_class:
         self.position = position
         self.state = state
         self.last_positions = [position for n in range(position_history)]
-        print(self.last_positions[2])
 
     def update(self):
         self.last_positions.pop(0)
         self.last_positions.append(self.position)
-        print(self.last_positions)
     
     def draw(self, image):
             color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
-            cv.circle(image, (self.last_positions[0].x, self.last_positions[0].y), 20, (255, 255, 255), -1)
-            cv.circle(image, (self.last_positions[1].x, self.last_positions[1].y), 10, (0, 0, 0), -1)
-            cv.circle(image, (self.last_positions[2].x, self.last_positions[2].y), 5, color, -1)
+            # print(str(self.last_positions))
+            #WHY
+            pts = np.array(self.last_positions)
+            image = cv.polylines(image, [pts], 
+                      False, color, 2)
 
 class player_class:
     position : vector2D = None

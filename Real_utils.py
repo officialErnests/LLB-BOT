@@ -7,4 +7,4 @@ class vector2D():
     def __str__(self):
         return "<"+str(self.x)+"; "+str(self.y)+">"
     def __repr__(self):
-        return "<"+str(self.x)+"; "+str(self.y)+">"
+        return [self.x, self.y]

@@ -42,16 +42,30 @@ class stage_class:
         elif ball.position.y < self.top:
             self.top = ball.position.y
 
-
     def draw(self, drawImg):
         cv.rectangle(drawImg,(self.left,self.top),(self.right,self.bottom),(0,255,0),3)
 
 class ball_class:
     state : ball_states
     position : vector2D = None
-    def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL):
+    last_positions = []
+
+    def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
+        self.last_positions = [position for n in range(position_history)]
+        print(self.last_positions[2])
+
+    def update(self):
+        self.last_positions.pop(0)
+        self.last_positions.append(self.position)
+        print(self.last_positions)
+    
+    def draw(self, image):
+            color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
+            cv.circle(image, (self.last_positions[0].x, self.last_positions[0].y), 20, (255, 255, 255), -1)
+            cv.circle(image, (self.last_positions[1].x, self.last_positions[1].y), 10, (0, 0, 0), -1)
+            cv.circle(image, (self.last_positions[2].x, self.last_positions[2].y), 5, color, -1)
 
 class player_class:
     position : vector2D = None
@@ -67,10 +81,12 @@ class gamedata:
     game_start = False
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos)
+        self.ball = ball_class(ball_pos, [], 3)
         # TODO
         # for player in players:
         #     self.players.append(player)
-    def update():
-        self.game.stage.update_border(self.game.ball)
-        self.game.stage.draw(start_img)
+    def update(self, image):
+        self.ball.update()
+        self.stage.update_border(self.ball)
+        self.stage.draw(image)
+        self.ball.draw(image)

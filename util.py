@@ -31,6 +31,8 @@ class llb_bot:
         x = 0
         while (True):
             x+=1
+
+            #init img
             img_hsv_value = None
             start_img = None
             if self.window_set:
@@ -52,6 +54,7 @@ class llb_bot:
             
             self.game.ball.state = 0
 
+            #detection
             #BLUE
             self.get_color(start_img, img_hsv_value, 1,
                                     np.array([105, 244, 255]),
@@ -70,7 +73,11 @@ class llb_bot:
                 case _:
                     cv.putText(start_img, "No ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
                     pass
-            self.game.update()
+            
+            #update game
+            self.game.update(start_img)
+
+            #display
             cv.imshow('funn.',start_img)
             if cv.waitKey(1) == ord('q'):
                 cv.destroyAllWindows()

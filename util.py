@@ -3,6 +3,7 @@ import pyautogui
 import numpy as np
 import time
 import pygetwindow
+from enum import Enum
 
 class window_cut:
     top = 31
@@ -10,6 +11,15 @@ class window_cut:
     bottom = 7
     left = 7
 
+#really util for real XD
+class vector2D():
+    x = 0
+    y = 0
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+#Stage set
 class stage:
     top = 0
     left = 0
@@ -20,18 +30,32 @@ class stage:
         self.top = top
         self.right = right
         self.bottom = bottom
+    
+    @classmethod
+    def from_vector2d(self, vector2d : vector2D):
+        self.top = vector2d.y
+        self.bottom = vector2d.y
+        self.left = vector2d.x
+        self.right = vector2d.x
 
-class vector2D():
-    x = 0
-    y = 0
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+#Ball classes
+class ball_states(Enum):
+    NEUTRAL = 0
+    RED = 1
+    BLUE = 2
 
 class ball_class:
+    state : ball_states
     position : vector2D = None
-    def __init__(self, position):
+    def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL):
         self.position = position
+        self.state = state
+
+# TODO
+#Charecter class
+class charecters(Enum):
+    Stitch = 0
+    Switch = 1
 
 class player_class:
     position : vector2D = None
@@ -44,10 +68,13 @@ class gamedata:
     stage = None
     ball = None
     players = []
-    def __init__(self, ball_pos : vector2D, ):
-        pass
-
-    
+    game_start = False
+    def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
+        self.stage = stage.from_vector2d(ball_pos, ball_pos)
+        self.ball = ball_class(ball_pos)
+        # TODO
+        for player in players:
+            self.players.append(player)
     
 class llb_bot:
     windows = None
@@ -57,7 +84,7 @@ class llb_bot:
     coolRect = None
     window_set = False
     ball_state = 0
-    ball_position = 0
+    game = gamedata(vector2D(100,100))
     def __init__(self, windowName):
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]

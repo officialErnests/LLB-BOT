@@ -27,21 +27,21 @@ class vector2D():
         y_distance = borders[1] - self.y if direction_vec.y < 0 else -1 if direction_vec.y == 0 else borders[3] - self.y
 
         if direction_vec.x == 0 and direction_vec.y == 0:
-            return 0
+            return 0, 0
         if direction_vec.x == 0:
-            return y_distance
+            return y_distance, vector2D(0, -1) if direction_vec.y < 0 else vector2D(0, 1)
         if direction_vec.y == 0:
-            return x_distance
+            return x_distance, vector2D(-1, 0) if direction_vec.x < 0 else vector2D(1, 0)
         
         ratio_x = x_distance / direction_vec.x
         ratio_y = y_distance / direction_vec.y
 
         if ratio_x < ratio_y:
             y_distance = (direction_vec.y * x_distance) / direction_vec.x
-            return vector2D(x_distance, y_distance).magnitude()
+            return vector2D(x_distance, y_distance).magnitude(), vector2D(-1, 0) if direction_vec.x < 0 else vector2D(1, 0)
         else:
             x_distance = (direction_vec.x * y_distance) / direction_vec.y
-            return vector2D(x_distance, y_distance).magnitude()
+            return vector2D(x_distance, y_distance).magnitude(), vector2D(0, -1) if direction_vec.y < 0 else vector2D(0, 1)
     def magnitude(self):
         return abs(self.x) + abs(self.y)
     def len(self):

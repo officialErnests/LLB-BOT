@@ -21,6 +21,9 @@ class stage_class:
     bottom = 0
     right = 0
     def __init__(self, vector):
+        self.reset(vector)
+    
+    def reset(self, vector):
         if isinstance(vector, vector2D):
             self.top = vector.y
             self.bottom = vector.y
@@ -31,7 +34,7 @@ class stage_class:
             self.top = vector[1]
             self.right = vector[2]
             self.bottom = vector[3]
-    
+
     def update_border(self, ball):
         if ball.position.x > self.right:
             self.right = ball.position.x
@@ -78,7 +81,9 @@ class ball_class:
     def prediction(self, image, stage):
         color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
         to_vector = ((self.last_positions[self.range - 1] - self.position).normalize()) * -1
-        idk = (self.position + to_vector * self.position.distance_till_intersection(stage.arr(), to_vector))
+        len, hit_wall = self.position.distance_till_intersection(stage.arr(), to_vector)
+        print(hit_wall)
+        idk = (self.position + to_vector * len)
         pts = np.array([self.position.arr(), idk.arr()], dtype=np.int32)
         image = cv.polylines(image, [pts], 
                       False, color, 2)
@@ -104,6 +109,9 @@ class gamedata:
         #     self.players.append(player)
     def update(self, image):
         self.ball.update()
+        if not self.game_start:
+            self.game_start = True
+            self.stage.reset(self.ball.position)
         self.stage.update_border(self.ball)
 
         #debug stuff

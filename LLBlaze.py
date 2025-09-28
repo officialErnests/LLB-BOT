@@ -124,7 +124,9 @@ class gamedata:
             for x in range(len(self.prev_hits)):
                 estimate += self.prev_hits[x]
             estimate /= len(self.prev_hits)
-            print(estimate)
+            self.stage.draw(image)
+            self.ball.draw(image)
+            self.ball.prediction(image, self.stage, 10)
             return
         elif len(self.prev_hits) > 0:
             self.prev_hits = []

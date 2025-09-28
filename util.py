@@ -14,7 +14,7 @@ class window_cut:
 
 class llb_bot:
     windows = None
-    img_test = cv.imread('testimg/test3.png',cv.IMREAD_UNCHANGED)
+    img_test = cv.imread('testimg/test5.png',cv.IMREAD_UNCHANGED)
     img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
     w, h = img_ball.shape[1::-1]
     coolRect = None
@@ -52,7 +52,7 @@ class llb_bot:
                 img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
                 start_img = self.img_test
             
-            self.detect_player(start_img, img_hsv_value)
+            start_img = self.detect_hit(start_img, img_hsv_value)
 
             self.detect_ball(start_img, img_hsv_value)
             
@@ -68,7 +68,11 @@ class llb_bot:
                 self.game.game_start = False
     
     def detect_hit(self, start_img, img_hsv_value):
-        pass
+        masked_screenshot = cv.inRange(img_hsv_value, 
+                                       np.array([0, 0, 0]),
+                                        np.array([0, 0, 0]))
+        # ret, thresh = cv.threshold(masked_screenshot,254,255,0)
+        return masked_screenshot
 
     def detect_player(self, start_img, img_hsv_value):
         pass
@@ -79,12 +83,12 @@ class llb_bot:
         #detection
         #BLUE
         self.get_color(start_img, img_hsv_value, 1,
-                                np.array([105, 244, 255]),
-                                np.array([105, 243, 255]))
+                                np.array([105, 243, 255]),
+                                np.array([105, 244, 255]))
         #RED
         self.get_color(start_img, img_hsv_value, 2,
-                                np.array([5, 230, 255]),
-                                np.array([5, 229, 255]))
+                                np.array([5, 229, 255]),
+                                np.array([5, 230, 255]))
         match self.game.ball.state:
             case 1:
                 cv.putText(start_img, "Blue ball", (100,300), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 4)

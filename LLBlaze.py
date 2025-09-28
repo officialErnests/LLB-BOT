@@ -78,16 +78,21 @@ class ball_class:
             image = cv.polylines(image, [pts], 
                       False, color, 2)
     
-    def prediction(self, image, stage):
+    def prediction(self, image, stage, line_amount):
         color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
         to_vector = ((self.last_positions[self.range - 1] - self.position).normalize()) * -1
-        len, hit_wall = self.position.distance_till_intersection(stage.arr(), to_vector)
-        print(hit_wall)
-        idk = (self.position + to_vector * len)
         
-        len2, hit_wall2 = idk.distance_till_intersection(stage.arr(), to_vector * hit_wall)
-        idk2 = (idk + to_vector * len2 * hit_wall)
-        pts = np.array([self.position.arr(), idk.arr(), idk2.arr()], dtype=np.int32)
+        positions = [self.position.arr()]
+        start = self.position
+        direction = to_vector
+        for n in range(line_amount):
+            len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
+            result = (start + direction * len)
+            positions.append(result.arr())
+            direction *= hit_wall
+            start = result
+
+        pts = np.array([positions], dtype=np.int32)
         image = cv.polylines(image, [pts], 
                       False, color, 2)
         
@@ -121,4 +126,4 @@ class gamedata:
         self.stage.draw(image)
         self.ball.draw(image)
 
-        self.ball.prediction(image, self.stage)
+        self.ball.prediction(image, self.stage, 4)

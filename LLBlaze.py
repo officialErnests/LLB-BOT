@@ -79,7 +79,7 @@ class ball_class:
         color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
         to_vector = ((self.last_positions[self.range - 1] - self.position).normalize()) * -1
         # idk = (self.position + to_vector * self.position.distance_till_intersection(stage.arr(), to_vector))
-        idk = vector2D(self.position.x + to_vector.x * self.position.distance_till_intersection(stage.arr(), to_vector), self.position.y)
+        idk = vector2D(self.position.x + self.position.distance_till_intersection(stage.arr(), to_vector), self.position.y)
         # print(self.last_positions[0] - idk)
         pts = np.array([self.position.arr(), idk.arr()], dtype=np.int32)
         image = cv.polylines(image, [pts], 

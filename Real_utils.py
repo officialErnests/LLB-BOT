@@ -21,7 +21,10 @@ class vector2D():
     def __add__(self, vec2):
         return vector2D(self.x + vec2.x, self.y + vec2.y)
     def __mul__(self, mul):
-        return vector2D(self.x * mul, self.y * mul)
+        if isinstance(mul, vector2D):
+            return vector2D(self.x * mul.x, self.y * mul.y)
+        else:
+            return vector2D(self.x * mul, self.y * mul)
     def distance_till_intersection(self, borders, direction_vec):
         x_distance = borders[0] - self.x if direction_vec.x < 0 else -1 if direction_vec.x == 0 else borders[2] - self.x
         y_distance = borders[1] - self.y if direction_vec.y < 0 else -1 if direction_vec.y == 0 else borders[3] - self.y
@@ -29,19 +32,19 @@ class vector2D():
         if direction_vec.x == 0 and direction_vec.y == 0:
             return 0, 0
         if direction_vec.x == 0:
-            return y_distance, vector2D(0, -1) if direction_vec.y < 0 else vector2D(0, 1)
+            return y_distance, vector2D(1, -1)
         if direction_vec.y == 0:
-            return x_distance, vector2D(-1, 0) if direction_vec.x < 0 else vector2D(1, 0)
+            return x_distance, vector2D(-1, 1)
         
         ratio_x = x_distance / direction_vec.x
         ratio_y = y_distance / direction_vec.y
 
         if ratio_x < ratio_y:
             y_distance = (direction_vec.y * x_distance) / direction_vec.x
-            return vector2D(x_distance, y_distance).magnitude(), vector2D(-1, 0) if direction_vec.x < 0 else vector2D(1, 0)
+            return vector2D(x_distance, y_distance).magnitude(), vector2D(-1, 1)
         else:
             x_distance = (direction_vec.x * y_distance) / direction_vec.y
-            return vector2D(x_distance, y_distance).magnitude(), vector2D(0, -1) if direction_vec.y < 0 else vector2D(0, 1)
+            return vector2D(x_distance, y_distance).magnitude(), vector2D(1, -1)
     def magnitude(self):
         return abs(self.x) + abs(self.y)
     def len(self):

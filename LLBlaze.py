@@ -84,7 +84,10 @@ class ball_class:
         len, hit_wall = self.position.distance_till_intersection(stage.arr(), to_vector)
         print(hit_wall)
         idk = (self.position + to_vector * len)
-        pts = np.array([self.position.arr(), idk.arr()], dtype=np.int32)
+        
+        len2, hit_wall2 = idk.distance_till_intersection(stage.arr(), to_vector * hit_wall)
+        idk2 = (idk + to_vector * len2 * hit_wall)
+        pts = np.array([self.position.arr(), idk.arr(), idk2.arr()], dtype=np.int32)
         image = cv.polylines(image, [pts], 
                       False, color, 2)
         

@@ -121,12 +121,12 @@ class gamedata:
         if self.hit_amount > 0:
             self.prev_hits.append(self.hit_amount)
             estimate = 0
-            for x in range(self.prev_hits.len()):
+            for x in range(len(self.prev_hits)):
                 estimate += self.prev_hits[x]
-            estimate /= self.prev_hits.len()
+            estimate /= len(self.prev_hits)
             print(estimate)
             return
-        elif self.prev_hits.len() > 0:
+        elif len(self.prev_hits) > 0:
             self.prev_hits = []
         self.ball.update()
         if not self.game_start:

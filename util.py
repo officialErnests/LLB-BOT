@@ -52,7 +52,7 @@ class llb_bot:
                 img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
                 start_img = self.img_test
             
-            start_img = self.detect_hit(start_img, img_hsv_value)
+            self.detect_hit(start_img, img_hsv_value)
 
             self.detect_ball(start_img, img_hsv_value)
             
@@ -77,14 +77,11 @@ class llb_bot:
                                         np.array([0, 0, 0]))
         # ret, thresh = cv.threshold(masked_screenshot,254,255,0)
         detected = 0
-        h = masked_screenshot.shape[0]
-        w = masked_screenshot.shape[1]
-        for y in range(0, h):
-            for x in range(0,w):
-                if masked_screenshot[y,x] == 0:
+        for y in range(0, masked_screenshot.shape[0]):
+            for x in range(0,masked_screenshot.shape[1]):
+                if masked_screenshot[y,x] != 0:
                     detected += 1
-        print(detected)
-        return masked_screenshot
+        self.game.hit_amount = detected
 
     def detect_player(self, start_img, img_hsv_value):
         pass

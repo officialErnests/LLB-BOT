@@ -109,6 +109,8 @@ class gamedata:
     ball : ball_class = None
     players = []
     game_start = False
+    hit_amount = 0
+    prev_hits = []
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
         self.ball = ball_class(ball_pos, [], 3)
@@ -116,6 +118,16 @@ class gamedata:
         # for player in players:
         #     self.players.append(player)
     def update(self, image):
+        if self.hit_amount > 0:
+            self.prev_hits.append(self.hit_amount)
+            estimate = 0
+            for x in range(self.prev_hits.len()):
+                estimate += self.prev_hits[x]
+            estimate /= self.prev_hits.len()
+            print(estimate)
+            return
+        elif self.prev_hits.len() > 0:
+            self.prev_hits = []
         self.ball.update()
         if not self.game_start:
             self.game_start = True

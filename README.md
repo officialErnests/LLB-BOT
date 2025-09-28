@@ -19,6 +19,7 @@ Leathal league blaze bot using opencv :))
 8. https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html
 9. https://realpython.com/python-multiple-constructors/
 10. https://www.geeksforgeeks.org/python/python-opencv-cv2-polylines-method/
+11. https://www.reddit.com/r/opencv/comments/e1j7dg/question_is_there_a_way_to_calculate_the
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

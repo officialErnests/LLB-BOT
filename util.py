@@ -14,7 +14,7 @@ class window_cut:
 
 class llb_bot:
     windows = None
-    img_test = cv.imread('testimg/test5.png',cv.IMREAD_UNCHANGED)
+    img_test = cv.imread('testimg/test2.png',cv.IMREAD_UNCHANGED)
     img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
     w, h = img_ball.shape[1::-1]
     coolRect = None
@@ -68,10 +68,22 @@ class llb_bot:
                 self.game.game_start = False
     
     def detect_hit(self, start_img, img_hsv_value):
-        masked_screenshot = cv.inRange(img_hsv_value, 
+        screen_witdth = start_img.shape
+        var = 65/2
+        var2 = screen_witdth[1] + 170
+        masked_screenshot = img_hsv_value[screen_witdth[0]-120:screen_witdth[0]-110, int(var2/2-var):int(var2/2+var)]
+        masked_screenshot = cv.inRange(masked_screenshot, 
                                        np.array([0, 0, 0]),
                                         np.array([0, 0, 0]))
         # ret, thresh = cv.threshold(masked_screenshot,254,255,0)
+        detected = 0
+        h = masked_screenshot.shape[0]
+        w = masked_screenshot.shape[1]
+        for y in range(0, h):
+            for x in range(0,w):
+                if masked_screenshot[y,x] == 0:
+                    detected += 1
+        print(detected)
         return masked_screenshot
 
     def detect_player(self, start_img, img_hsv_value):

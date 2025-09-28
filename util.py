@@ -89,9 +89,11 @@ class llb_bot:
         # ret, thresh = self.color_find(img_hsv_value,
         #                         np.array([0, 0, 0]),
         #                         np.array([105, 255, 255]))
-        masked_screenshot = cv.inRange(img_hsv_value,
-                                    np.array([0, 0, 0]),
-                                    np.array([105, 255, 255]))
+        screen_witdth = start_img.shape
+        masked_screenshot = img_hsv_value[120:screen_witdth[0], 0:screen_witdth[1]]
+        masked_screenshot = cv.inRange(masked_screenshot,
+                                    np.array([1, 242, 217]),
+                                    np.array([2, 242, 217]))
         ret, thresh = cv.threshold(masked_screenshot,254,255,0)
         return thresh
 

@@ -29,6 +29,7 @@ class llb_bot:
     
     def run(self):
         x = 0
+        time.sleep(1)
         while (True):
             x+=1
 
@@ -59,8 +60,16 @@ class llb_bot:
             self.detect_ball(start_img, img_hsv_value)
             
             # #update game
-            self.game.update(start_img)
-
+            match self.game.update(start_img):
+                case -1:
+                    pyautogui.keyDown("left")
+                    pyautogui.keyUp("right")
+                case 0:
+                    pyautogui.keyUp("left")
+                    pyautogui.keyUp("right")
+                case 1:
+                    pyautogui.keyUp("left")
+                    pyautogui.keyDown("right")
             #display
             cv.imshow('funn.',start_img)
             if cv.waitKey(1) == ord('q'):
@@ -96,7 +105,7 @@ class llb_bot:
             cY = int(movement["m01"] / movement["m00"]) + 120
             cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
             cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
-            self.game.ball.position = vector2D(cX, cY)
+            self.game.players[0].position = vector2D(cX, cY)
 
     def detect_ball(self, start_img, img_hsv_value):
         self.game.ball.state = 0

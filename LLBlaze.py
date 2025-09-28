@@ -114,6 +114,7 @@ class gamedata:
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
         self.ball = ball_class(ball_pos, [], 3)
+        self.players.append(player_class(vector2D(0,0), "RAPTOR"))
         # TODO
         # for player in players:
         #     self.players.append(player)
@@ -141,3 +142,8 @@ class gamedata:
         self.ball.draw(image)
 
         self.ball.prediction(image, self.stage, 4)
+
+        if self.players[0].position.x > self.ball.position.x:
+            return -1
+        else:
+            return 1

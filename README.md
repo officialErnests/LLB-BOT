@@ -20,6 +20,8 @@ Leathal league blaze bot using opencv :))
 9. https://realpython.com/python-multiple-constructors/
 10. https://www.geeksforgeeks.org/python/python-opencv-cv2-polylines-method/
 11. https://www.reddit.com/r/opencv/comments/e1j7dg/question_is_there_a_way_to_calculate_the
+12. https://stackoverflow.com/questions/53381360/how-do-i-detect-a-keypress-event-with-pyautogui
+13. https://pyautogui.readthedocs.io/en/latest/keyboard.html
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

@@ -53,10 +53,11 @@ class ball_class:
     state : ball_states
     position : vector2D = None
     last_positions = []
-
+    range = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
+        self.range = position_history -1
         self.last_positions = [position for n in range(position_history)]
 
     def update(self):
@@ -76,7 +77,7 @@ class ball_class:
     
     def prediction(self, image, stage):
         color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
-        to_vector = ((self.last_positions[0] - self.position).normalize()) * -1
+        to_vector = ((self.last_positions[self.range - 1] - self.position).normalize()) * -1
         idk = (self.position + to_vector * self.position.distance_till_intersection(stage.arr(), to_vector))
         # print(self.last_positions[0] - idk)
         pts = np.array([self.position.arr(), idk.arr()], dtype=np.int32)

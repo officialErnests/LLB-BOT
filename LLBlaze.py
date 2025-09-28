@@ -45,6 +45,9 @@ class stage_class:
 
     def draw(self, drawImg):
         cv.rectangle(drawImg,(self.left,self.top),(self.right,self.bottom),(0,255,0),3)
+    
+    def arr(self):
+        return [self.left, self.top, self.right, self.bottom]
 
 class ball_class:
     state : ball_states
@@ -61,16 +64,25 @@ class ball_class:
         self.last_positions.append(self.position)
     
     def draw(self, image):
-            color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
+            color = (100, 100, 0) if self.state == 1 else (0, 0, 100)
             # print(str(self.last_positions))
             #WHY
             cool_array = []
             for vec2D in self.last_positions:
                 cool_array.append(vec2D.arr())
-            print(cool_array)
             pts = np.array(cool_array)
             image = cv.polylines(image, [pts], 
                       False, color, 2)
+    
+    def prediction(self, image, stage):
+        color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
+        to_vector = ((self.last_positions[0] - self.position).normalize()) * -1
+        idk = (self.position + to_vector * self.position.distance_till_intersection(stage.arr(), to_vector))
+        # print(self.last_positions[0] - idk)
+        pts = np.array([self.position.arr(), idk.arr()], dtype=np.int32)
+        image = cv.polylines(image, [pts], 
+                      False, color, 2)
+        
 
 class player_class:
     position : vector2D = None
@@ -86,12 +98,16 @@ class gamedata:
     game_start = False
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos, [], 10)
+        self.ball = ball_class(ball_pos, [], 3)
         # TODO
         # for player in players:
         #     self.players.append(player)
     def update(self, image):
         self.ball.update()
         self.stage.update_border(self.ball)
+
+        #debug stuff
         self.stage.draw(image)
         self.ball.draw(image)
+
+        self.ball.prediction(image, self.stage)

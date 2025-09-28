@@ -1,3 +1,4 @@
+import math
 class vector2D():
     x = 0
     y = 0
@@ -10,3 +11,41 @@ class vector2D():
         return [self.x, self.y]
     def arr(self):
         return [self.x, self.y]
+    def __sub__(self, vec2):
+        return vector2D(self.x - vec2.x, self.y - vec2.y)
+    def normalize(self):
+        max = abs(self.x) + abs(self.y)
+        if max == 0:
+            return vector2D(0,0)
+        return vector2D(self.x / max, self.y / max)
+    def __add__(self, vec2):
+        return vector2D(self.x + vec2.x, self.y + vec2.y)
+    def __mul__(self, mul):
+        return vector2D(self.x * mul, self.y * mul)
+    def distance_till_intersection(self, borders, direction_vec):
+        #hate math ;-;
+        #did this on paper, can check #noob-dev for it ;-;
+        x_distance = self.x - borders[0] if direction_vec.x < 0 else -1 if direction_vec.x == 0 else borders[2] - self.x
+        y_distance = self.y - borders[1] if direction_vec.y < 0 else -1 if direction_vec.y == 0 else borders[3] - self.y
+        
+        ratio_x = x_distance / direction_vec.x
+        ratio_y = y_distance / direction_vec.y
+
+        if ratio_x < ratio_y:
+            y_distance = (direction_vec.y * x_distance) / direction_vec.x
+            return vector2D(x_distance, y_distance).len()
+
+        if abs(x_distance * direction_vec.x) >
+        if x_distance == -1 and y_distance == -1:
+            return 0
+        if x_distance == -1:
+            return y_distance
+        if y_distance == -1:
+            return x_distance
+        if x_distance < y_distance:
+            print(x_distance, y_distance, direction_vec.y, direction_vec.x, vector2D(x_distance, direction_vec.y / direction_vec.x * x_distance).len())
+            return vector2D(x_distance, direction_vec.y / direction_vec.x * x_distance).len()
+        else:
+            return vector2D(direction_vec.x /  direction_vec.y * y_distance, y_distance).len()
+    def len(self):
+        return math.sqrt(self.x**2 + self.y**2)

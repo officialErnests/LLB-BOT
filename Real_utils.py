@@ -49,3 +49,5 @@ class vector2D():
         return abs(self.x) + abs(self.y)
     def len(self):
         return math.sqrt(self.x**2 + self.y**2)
+    def distance_to(self, vec2d):
+        return (self - vec2d).len()

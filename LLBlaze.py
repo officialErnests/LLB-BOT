@@ -128,7 +128,12 @@ class gamedata:
             self.stage.draw(image)
             self.ball.draw(image)
             self.ball.prediction(image, self.stage, 10)
-            return
+            return_inputs = {
+                "walk_direction" : 0,
+                "jump" : False,
+                "Hit" : False
+            }
+            return return_inputs
         elif len(self.prev_hits) > 0:
             self.prev_hits = []
         self.ball.update()
@@ -143,9 +148,10 @@ class gamedata:
 
         self.ball.prediction(image, self.stage, 4)
         
-        #TODO add jump
+        #sends player input  c  c 
         return_inputs = {
             "walk_direction" : -1 if self.players[0].position.x > self.ball.position.x else 1,
-            "jump" : True
+            "jump" : self.players[0].position.y > self.ball.position.y,
+            "Hit" : self.players[0].position.distance_to(self.ball.position) < 200
         }
         return return_inputs

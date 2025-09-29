@@ -23,10 +23,17 @@ class llb_bot:
     bot_enabled = False
     game = gamedata(vector2D(100,100))
 
+    #adjust based on fps your getting
+    #higger fps set like 0.2 or 0.1
+    #else leave it at 0
+    jump_delay = 0
+
     inputs = {
         "walk_direction" : 0,
         "jump" : False,
-        "jump_timer" : 0
+        "jump_timer" : 0,
+        "Hit" : False,
+        "Hit_timer" : 0,
     }
     debounces = {
         "w" : False,
@@ -76,25 +83,38 @@ class llb_bot:
             prew_inputs = {
                 "walk_direction" : self.inputs["walk_direction"],
                 "jump" :  self.inputs["jump"],
-                "jump_timer" : 0
+                "jump_timer" : 0,
+                "Hit" : self.inputs["Hit"],
+                "Hit_timer" : 0,
             }
-            print(prew_inputs)
             return_inputs = self.game.update(start_img)
             self.inputs["walk_direction"] = return_inputs["walk_direction"]
             self.inputs["jump"] = return_inputs["jump"]
-            print(prew_inputs)
+            self.inputs["Hit"] = return_inputs["Hit"]
 
             #bot
             if self.bot_enabled:
                 cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+
+                #handles hitting
+                if self.inputs["Hit_timer"] > 0:
+                    self.inputs["Hit_timer"] -= time.time() - prev_time
+                elif self.inputs["Hit"]:
+                    self.inputs["Hit_timer"] = 0.1
+                    pyautogui.press("c")
+
+                #handles jump
                 if self.inputs["jump_timer"] > 0:
                     self.inputs["jump_timer"] -= time.time() - prev_time
+                    if not self.inputs["jump"] and prew_inputs["jump"]:
+                        pyautogui.keyUp("space")
                 elif self.inputs["jump"]:
-                    self.inputs["jump_timer"] = 1
+                    self.inputs["jump_timer"] = self.jump_delay
                     pyautogui.keyDown("space")
                 elif prew_inputs["jump"] != self.inputs["jump"]:
                     pyautogui.keyUp("space")
-                # print(prew_inputs["walk_direction"], self.inputs["walk_direction"])
+
+                #handles walking
                 if prew_inputs["walk_direction"] != self.inputs["walk_direction"]:
                     match self.inputs["walk_direction"]:
                         case -1:

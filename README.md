@@ -5,6 +5,7 @@ Leathal league blaze bot using opencv :))
 
 
 > Resources also just formyself so i rember them :))
+> i have made so many but now i'm doing for gigs and gas XD (to see how much resources i use :DD)
 # Docs used
 1. https://medium.com/@sasasulakshi/opencv-object-masking-b3143e310d03
 2. https://www.geeksforgeeks.org/computer-vision/choosing-the-correct-upper-and-lower-hsv-boundaries-for-color-detection-with-cv-inrange-opencv
@@ -22,6 +23,8 @@ Leathal league blaze bot using opencv :))
 11. https://www.reddit.com/r/opencv/comments/e1j7dg/question_is_there_a_way_to_calculate_the
 12. https://stackoverflow.com/questions/53381360/how-do-i-detect-a-keypress-event-with-pyautogui
 13. https://pyautogui.readthedocs.io/en/latest/keyboard.html
+14. https://www.geeksforgeeks.org/python/time-perf_counter-function-in-python
+15. https://stackoverflow.com/questions/66036844/time-time-or-time-perf-counter-which-is-faster
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

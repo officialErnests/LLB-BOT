@@ -142,8 +142,10 @@ class gamedata:
         self.ball.draw(image)
 
         self.ball.prediction(image, self.stage, 4)
-
-        if self.players[0].position.x > self.ball.position.x:
-            return -1
-        else:
-            return 1
+        
+        #TODO add jump
+        return_inputs = {
+            "walk_direction" : -1 if self.players[0].position.x > self.ball.position.x else 1,
+            "jump" : True
+        }
+        return return_inputs

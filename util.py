@@ -24,22 +24,27 @@ class llb_bot:
     game = gamedata(vector2D(100,100))
 
     inputs = {
-        "walk_direction" : 0
+        "walk_direction" : 0,
+        "jump" : False,
+        "jump_timer" : 0
     }
     debounces = {
         "w" : False,
         "r" : False,
     }
 
+    prev_time = 0
+    prev_fps = [0 for n in range(5)]
     def __init__(self, windowName):
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
     
     def run(self):
-        x = 0
+        start_time = time.time()
         while (True):
-            x+=1
+            prev_time = time.time()
+
 
             #init img
             img_hsv_value = None
@@ -67,13 +72,30 @@ class llb_bot:
 
             self.detect_ball(start_img, img_hsv_value)
             
-            # #update game
-            prev_walk_direction = self.inputs["walk_direction"]
-            self.inputs["walk_direction"] = self.game.update(start_img)
+            #update game
+            prew_inputs = {
+                "walk_direction" : self.inputs["walk_direction"],
+                "jump" :  self.inputs["jump"],
+                "jump_timer" : 0
+            }
+            print(prew_inputs)
+            return_inputs = self.game.update(start_img)
+            self.inputs["walk_direction"] = return_inputs["walk_direction"]
+            self.inputs["jump"] = return_inputs["jump"]
+            print(prew_inputs)
+
+            #bot
             if self.bot_enabled:
                 cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
-                if prev_walk_direction != self.inputs["walk_direction"]:
-                    print(prev_walk_direction)
+                if self.inputs["jump_timer"] > 0:
+                    self.inputs["jump_timer"] -= time.time() - prev_time
+                elif self.inputs["jump"]:
+                    self.inputs["jump_timer"] = 1
+                    pyautogui.keyDown("space")
+                elif prew_inputs["jump"] != self.inputs["jump"]:
+                    pyautogui.keyUp("space")
+                # print(prew_inputs["walk_direction"], self.inputs["walk_direction"])
+                if prew_inputs["walk_direction"] != self.inputs["walk_direction"]:
                     match self.inputs["walk_direction"]:
                         case -1:
                             pyautogui.keyDown("left")
@@ -89,11 +111,29 @@ class llb_bot:
                             pyautogui.keyUp("right")
             else:
                 cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+
+                
+            #timers
+            self.prev_fps.pop(0)
+            self.prev_fps.append(1/(time.time() - self.prev_time))
+            sum = 0
+            for x in self.prev_fps:
+                sum += x / len(self.prev_fps)
+            cv.putText(start_img, "fps:" + str(round(sum,2)), (400,550), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
+            cv.putText(start_img, "sec:" + str(round(time.time() - start_time, 10)), (400,580), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
+            self.prev_time = time.time()
+
+
             #display
             cv.imshow('funn.',start_img)
             cv.waitKey(1)
+
+            #inputs
             if  keyboard.is_pressed("q"):
                 cv.destroyAllWindows()
+                pyautogui.keyUp("left")
+                pyautogui.keyUp("right")
+                pyautogui.keyUp("space")
                 break
             if keyboard.is_pressed("w"):
                 if not self.debounces["w"]:
@@ -103,6 +143,7 @@ class llb_bot:
                     if not self.bot_enabled:
                         pyautogui.keyUp("left")
                         pyautogui.keyUp("right")
+                        pyautogui.keyUp("space")
             else:
                 self.debounces["w"] = False
                 

@@ -23,6 +23,9 @@ class llb_bot:
     bot_enabled = False
     game = gamedata(vector2D(100,100))
 
+    inputs = {
+        "walk_direction" : 0
+    }
     debounces = {
         "w" : False,
         "r" : False,
@@ -65,19 +68,25 @@ class llb_bot:
             self.detect_ball(start_img, img_hsv_value)
             
             # #update game
-            direction = self.game.update(start_img)
+            prev_walk_direction = self.inputs["walk_direction"]
+            self.inputs["walk_direction"] = self.game.update(start_img)
             if self.bot_enabled:
                 cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
-                # match direction:
-                #     case -1:
-                #         pyautogui.keyDown("left")
-                #         pyautogui.keyUp("right")
-                #     case 0:
-                #         pyautogui.keyUp("left")
-                #         pyautogui.keyUp("right")
-                #     case 1:
-                #         pyautogui.keyUp("left")
-                #         pyautogui.keyDown("right")
+                if prev_walk_direction != self.inputs["walk_direction"]:
+                    print(prev_walk_direction)
+                    match self.inputs["walk_direction"]:
+                        case -1:
+                            pyautogui.keyDown("left")
+                            pyautogui.keyUp("right")
+                        case 0:
+                            pyautogui.keyUp("left")
+                            pyautogui.keyUp("right")
+                        case 1:
+                            pyautogui.keyUp("left")
+                            pyautogui.keyDown("right")
+                        case _:
+                            pyautogui.keyUp("left")
+                            pyautogui.keyUp("right")
             else:
                 cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
             #display
@@ -86,10 +95,14 @@ class llb_bot:
             if  keyboard.is_pressed("q"):
                 cv.destroyAllWindows()
                 break
-            if keyboard.press("w"):
+            if keyboard.is_pressed("w"):
                 if not self.debounces["w"]:
+                    self.inputs["walk_direction"] = 0
                     self.debounces["w"] = True
                     self.bot_enabled = not self.bot_enabled
+                    if not self.bot_enabled:
+                        pyautogui.keyUp("left")
+                        pyautogui.keyUp("right")
             else:
                 self.debounces["w"] = False
                 
@@ -100,7 +113,6 @@ class llb_bot:
             else:
                 self.debounces["r"] = False
             
-            print(self.debounces)
     
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape

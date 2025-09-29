@@ -1,8 +1,42 @@
 # LLB-BOT
-Leathal league blaze bot using opencv :))
+Leathal league blaze (from now on llb) bot using opencv :))
+![Wow](https://hc-cdn.hel1.your-objectstorage.com/s/v3/14e9d6d755dd43bfb529bdde71463d45ccca62ec_screenshot_2025-09-29_213133.png)
+
+# How to run
+## prerequirments
+1. To run this you will need leathal league blaze on steam (20bucks but it's a solid game ;DD)
+> If no llb demo: https://youtu.be/SNY3Zct-8NQ
+2. Then you will also need a way to run python
+## Run
+1. Open LLB and make sure not to minimize it (it auto closes if you do that)
+2. Run main.py (with your prefered py complier or intrepreter [idk what they are called ://])
+3. If you want to bot to play then you have to choose raptor with this specific skin
+![Skin_in_question](https://hc-cdn.hel1.your-objectstorage.com/s/v3/6f2c3b605df2509f1a880bac5149201170b1ff1b_screenshot_2025-09-29_213005.png)
+4. As well it needs to be with keyboard inputs aka player 1
+5. Have fun
+
+# Instructions
+## Keyboard
+Works even when not tabed in
+Q - quits
+W - enables / disables bot (sugest beeing tabed in llb)
+R - resets the border for map (when you end game or start new one)
 
 # Py scripts
+main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
+util.py - this is where open cv gets input data as well where player is moved
+Real_utils.py - My smart idea to create custom vector 2d class XD
+LLBlazze.py - holds all classes for game like ball and others as well do calculation on what to do (moves player and calculates ball bounces)
 
+# How does it work?
+1. Im using color to detect colors in game (specific tones) it's pretty easy since this game is stylized and colors are pretty carefully chosen
+2. Then using that i'm getting players and balls position
+3. Then from ball position i'm making border
+4. Then i get last balls position and calculate line till border
+5. Then i do that few time and that's all :DD
+6. For player movement i just compare positions (litralyy players x with balls x)
+7. For hitting i get distnace from player and ball (can be changed in LLBlaze.py at the most bottom) - `"Hit" : self.players[0].position.distance_to(self.ball.position) < 200` and just the 200 :DD
+![Hit](https://hc-cdn.hel1.your-objectstorage.com/s/v3/a88aaff3a2a2fa5a7a9369cb97e2e5f9585a869c_screenshot_2025-09-29_213103.png)
 
 > Resources also just formyself so i rember them :))
 > i have made so many but now i'm doing for gigs and gas XD (to see how much resources i use :DD)

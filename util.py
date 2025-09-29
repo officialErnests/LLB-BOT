@@ -5,6 +5,7 @@ import time
 import pygetwindow
 from LLBlaze import *
 from Real_utils import *
+import keyboard
 
 class window_cut:
     top = 31
@@ -19,8 +20,13 @@ class llb_bot:
     w, h = img_ball.shape[1::-1]
     coolRect = None
     window_set = False
-
+    bot_enabled = False
     game = gamedata(vector2D(100,100))
+
+    debounces = {
+        "w" : False,
+        "r" : False,
+    }
 
     def __init__(self, windowName):
         if len(pygetwindow.getWindowsWithTitle(windowName)):
@@ -29,7 +35,6 @@ class llb_bot:
     
     def run(self):
         x = 0
-        time.sleep(1)
         while (True):
             x+=1
 
@@ -60,23 +65,42 @@ class llb_bot:
             self.detect_ball(start_img, img_hsv_value)
             
             # #update game
-            match self.game.update(start_img):
-                case -1:
-                    pyautogui.keyDown("left")
-                    pyautogui.keyUp("right")
-                case 0:
-                    pyautogui.keyUp("left")
-                    pyautogui.keyUp("right")
-                case 1:
-                    pyautogui.keyUp("left")
-                    pyautogui.keyDown("right")
+            direction = self.game.update(start_img)
+            if self.bot_enabled:
+                cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+                # match direction:
+                #     case -1:
+                #         pyautogui.keyDown("left")
+                #         pyautogui.keyUp("right")
+                #     case 0:
+                #         pyautogui.keyUp("left")
+                #         pyautogui.keyUp("right")
+                #     case 1:
+                #         pyautogui.keyUp("left")
+                #         pyautogui.keyDown("right")
+            else:
+                cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
             #display
             cv.imshow('funn.',start_img)
-            if cv.waitKey(1) == ord('q'):
+            cv.waitKey(1)
+            if  keyboard.is_pressed("q"):
                 cv.destroyAllWindows()
                 break
-            if cv.waitKey(1) == ord('r'):
-                self.game.game_start = False
+            if keyboard.press("w"):
+                if not self.debounces["w"]:
+                    self.debounces["w"] = True
+                    self.bot_enabled = not self.bot_enabled
+            else:
+                self.debounces["w"] = False
+                
+            if keyboard.is_pressed("r"):
+                if not self.debounces["r"]:
+                    self.debounces["r"] = True
+                    self.game.game_start = False
+            else:
+                self.debounces["r"] = False
+            
+            print(self.debounces)
     
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape

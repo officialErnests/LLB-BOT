@@ -155,9 +155,9 @@ class llb_bot:
                         case _:
                             pyautogui.keyUp("left")
                             pyautogui.keyUp("right")
-                if self.detailed_debuger:
-                    print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
+                    if self.detailed_debuger:
+                        print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
+                        debugTimer = time.time()
             else:
                 cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
             if self.detailed_debuger:

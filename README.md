@@ -20,6 +20,7 @@ Leathal league blaze (from now on llb) bot using opencv :))
 Works even when not tabed in
 Q - quits
 W - enables / disables bot (sugest beeing tabed in llb)
+E - debug prints time
 R - resets the border for map (when you end game or start new one)
 
 # Py scripts
@@ -41,6 +42,7 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 > Resources also just formyself so i rember them :))
 > i have made so many but now i'm doing for gigs and gas XD (to see how much resources i use :DD)
 # Docs used
+## Py
 1. https://medium.com/@sasasulakshi/opencv-object-masking-b3143e310d03
 2. https://www.geeksforgeeks.org/computer-vision/choosing-the-correct-upper-and-lower-hsv-boundaries-for-color-detection-with-cv-inrange-opencv
 3. https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga17ed9f5d79ae97bd4c7cf18403e1689a
@@ -60,7 +62,10 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 14. https://www.geeksforgeeks.org/python/time-perf_counter-function-in-python
 15. https://stackoverflow.com/questions/66036844/time-time-or-time-perf-counter-which-is-faster
 16. https://realpython.com/python-profiling/
-
+## C
+1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
+2. https://docs.python.org/3/library/ctypes.html#module-ctypes
+3. https://stackoverflow.com/questions/4755303/python-cdll-cant-find-module
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4
 2. https://www.youtube.com/watch?v=OlEEv7lLbW0

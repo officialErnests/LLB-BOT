@@ -4,7 +4,7 @@ from pstats import SortKey, Stats
 
 #importing c or some shit like that
 from ctypes import cdll
-lib_move = cdll.LoadLibrary('./c_thingamajig/movement/libmove.dll')
+lib_move = cdll.LoadLibrary('./c_thingamajig/movement/movement_main.h')
 
 class mover(object):
     def __init__(self):

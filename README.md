@@ -66,6 +66,8 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes
 3. https://stackoverflow.com/questions/4755303/python-cdll-cant-find-module
+> At this point i got so sick and tierd of this that i pulled out visual studio (not vs code XD)
+4. https://learn.microsoft.com/en-us/cpp/build/walkthrough-creating-and-using-a-dynamic-link-library-cpp?view=msvc-170
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4
 2. https://www.youtube.com/watch?v=OlEEv7lLbW0

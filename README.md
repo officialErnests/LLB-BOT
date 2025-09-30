@@ -59,6 +59,7 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 13. https://pyautogui.readthedocs.io/en/latest/keyboard.html
 14. https://www.geeksforgeeks.org/python/time-perf_counter-function-in-python
 15. https://stackoverflow.com/questions/66036844/time-time-or-time-perf-counter-which-is-faster
+16. https://realpython.com/python-profiling/
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

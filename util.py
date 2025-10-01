@@ -7,6 +7,10 @@ from LLBlaze import *
 from Real_utils import *
 import keyboard
 
+#importing c or some shit like that
+from ctypes import cdll
+lib_move = cdll.LoadLibrary('.\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\movement_lib.dll')
+
 class window_cut:
     top = 31
     right = 7
@@ -26,9 +30,9 @@ class llb_bot:
     #adjust based on fps your getting
     #higger fps set like 0.2 or 0.1
     #else leave it at 0
-    jump_delay = 0
+    jump_delay = 0.2
     detailed_debuger = False
-
+    hit_enabled = False
     inputs = {
         "walk_direction" : 0,
         "jump" : False,
@@ -60,18 +64,28 @@ class llb_bot:
             img_hsv_value = None
             start_img = None
             if self.window_set:
+                if self.detailed_debuger: debugTimer_bot = time.time()
                 self.coolRect = self.windows._getWindowRect()
                 # print(self.coolRect)
                 #What an beutifull code :))
+                if self.detailed_debuger:
+                    print("-Window rect :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
                 
                 screenshot = pyautogui.screenshot()\
                     .crop((self.coolRect.left + window_cut.left,
                             self.coolRect.top + window_cut.top,
                             self.coolRect.right - window_cut.right,
                             self.coolRect.bottom - window_cut.bottom))
+                if self.detailed_debuger:
+                    print("-Screenshot :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
                 open_cv_screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
                 img_hsv_value = cv.cvtColor(open_cv_screenshot, cv.COLOR_BGR2HSV)
                 start_img = open_cv_screenshot
+                if self.detailed_debuger:
+                    print("-Color convert :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
             else:
                 img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
                 start_img = self.img_test
@@ -96,13 +110,6 @@ class llb_bot:
                 debugTimer = time.time()
             
             #update game
-            prew_inputs = {
-                "walk_direction" : self.inputs["walk_direction"],
-                "jump" :  self.inputs["jump"],
-                "jump_timer" : 0,
-                "Hit" : self.inputs["Hit"],
-                "Hit_timer" : 0,
-            }
             return_inputs = self.game.update(start_img)
             self.inputs["walk_direction"] = return_inputs["walk_direction"]
             self.inputs["jump"] = return_inputs["jump"]
@@ -112,52 +119,50 @@ class llb_bot:
                 debugTimer = time.time()
 
             #bot
+            inputs = {
+                "Hit" : False,
+                "Jump" : False,
+                "Left" : False,
+                "Right" : False
+            }
             if self.bot_enabled:
                 if self.detailed_debuger: debugTimer_bot = time.time()
                 
                 cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
                 #handles hitting
-                if self.inputs["Hit_timer"] > 0:
-                    self.inputs["Hit_timer"] -= time.time() - prev_time
-                elif self.inputs["Hit"]:
-                    self.inputs["Hit_timer"] = 0.1
-                    pyautogui.press("c")
+                if self.inputs["Hit"] and self.hit_enabled:
+                    inputs["Hit"] = True
                 if self.detailed_debuger:
                     print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
                     debugTimer = time.time()
 
                 #handles jump
-                if self.inputs["jump_timer"] > 0:
-                    self.inputs["jump_timer"] -= time.time() - prev_time
-                    if not self.inputs["jump"] and prew_inputs["jump"]:
-                        pyautogui.keyUp("space")
-                elif self.inputs["jump"]:
+                if self.inputs["jump_timer"] <= 0:
                     self.inputs["jump_timer"] = self.jump_delay
-                    pyautogui.keyDown("space")
-                elif prew_inputs["jump"] != self.inputs["jump"]:
-                    pyautogui.keyUp("space")
+                    inputs["Jump"] = False
+                elif self.inputs["jump"]:
+                    self.inputs["jump_timer"] -= time.time() - prev_time
+                    inputs["Jump"] = True
                 if self.detailed_debuger:
                     print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
                     debugTimer = time.time()
 
                 #handles walking
-                if prew_inputs["walk_direction"] != self.inputs["walk_direction"]:
-                    match self.inputs["walk_direction"]:
-                        case -1:
-                            pyautogui.keyDown("left")
-                            pyautogui.keyUp("right")
-                        case 0:
-                            pyautogui.keyUp("left")
-                            pyautogui.keyUp("right")
-                        case 1:
-                            pyautogui.keyUp("left")
-                            pyautogui.keyDown("right")
-                        case _:
-                            pyautogui.keyUp("left")
-                            pyautogui.keyUp("right")
-                    if self.detailed_debuger:
-                        print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
-                        debugTimer = time.time()
+                match self.inputs["walk_direction"]:
+                    case -1:
+                        inputs["Left"] = True
+                    case 0:
+                        #if both disabled ;)
+                        pass
+                    case 1:
+                        inputs["Right"] = True
+                    case _:
+                        #if both passed ;)
+                        pass
+                if self.detailed_debuger:
+                    print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
+                lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
             else:
                 cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
             if self.detailed_debuger:
@@ -205,6 +210,13 @@ class llb_bot:
                     self.game.game_start = False
             else:
                 self.debounces["r"] = False
+
+            if keyboard.is_pressed("s"):
+                if not self.debounces["s"]:
+                    self.debounces["s"] = True
+                    self.game.game_start = False
+            else:
+                self.debounces["s"] = False
             
             if keyboard.is_pressed("e"):
                 if not self.debounces["e"]:

@@ -154,4 +154,5 @@ class gamedata:
             "jump" : self.players[0].position.y > self.ball.position.y,
             "Hit" : self.players[0].position.distance_to(self.ball.position) < 200
         }
+        print(self.players[0].position.distance_to(self.ball.position))
         return return_inputs

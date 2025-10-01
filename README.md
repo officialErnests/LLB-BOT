@@ -22,7 +22,7 @@ Q - quits
 W - enables / disables bot (sugest beeing tabed in llb)
 E - debug prints time
 R - resets the border for map (when you end game or start new one)
-
+S - enable hit mode (aka bot hit's the ball)
 # Py scripts
 main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
 util.py - this is where open cv gets input data as well where player is moved
@@ -38,6 +38,17 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 6. For player movement i just compare positions (litralyy players x with balls x)
 7. For hitting i get distnace from player and ball (can be changed in LLBlaze.py at the most bottom) - `"Hit" : self.players[0].position.distance_to(self.ball.position) < 200` and just the 200 :DD
 ![Hit](https://hc-cdn.hel1.your-objectstorage.com/s/v3/a88aaff3a2a2fa5a7a9369cb97e2e5f9585a869c_screenshot_2025-09-29_213103.png)
+
+# Optimization
+Guess what yall.. pyautogui is slow, like reallly slow
+so i made my own library in cpp and compiled it and called that instead of py auto gui movement
+AND GUESS WHAT?? 
+You think it's gonna bee minor speed increase?
+200% speed increase?
+400% speed increase?
+...
+NO **4285%** speed increase... that was definatly worth it XD
+(pyauto gui ran at 0.3s and my library only at 0.007s)
 
 > Resources also just formyself so i rember them :))
 > i have made so many but now i'm doing for gigs and gas XD (to see how much resources i use :DD)

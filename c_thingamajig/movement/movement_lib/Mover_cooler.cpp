@@ -5,47 +5,43 @@
 #include <WinUser.h>
 using namespace std;
 
-void movement_init() {
+void movement(bool hit, bool jump, bool left, bool right) {
 
 
     INPUT inputs[8] = {};
     ZeroMemory(inputs, sizeof(inputs));
 
-    //right
+    //hit
     inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = VK_RIGHT;
-
-    //left
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VK_LEFT;
-
-    //hit
-    inputs[2].type = INPUT_KEYBOARD;
-    inputs[2].ki.wVk = 'c';
+    inputs[0].ki.wVk = 'C';
+    if (!hit)
+    {
+        inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
 
     //jump
-    inputs[3].type = INPUT_KEYBOARD;
-    inputs[3].ki.wVk = VK_SPACE;
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = VK_SPACE;
+    if (!left)
+    {
+        inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+
+    //left
+    inputs[2].type = INPUT_KEYBOARD;
+    inputs[2].ki.wVk = VK_LEFT;
+    if (!left)
+    {
+        inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
 
     //right
-    inputs[4].type = INPUT_KEYBOARD;
-    inputs[4].ki.wVk = VK_RIGHT;
-    inputs[4].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    //left
-    inputs[5].type = INPUT_KEYBOARD;
-    inputs[5].ki.wVk = VK_LEFT;
-    inputs[5].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    //hit
-    inputs[6].type = INPUT_KEYBOARD;
-    inputs[6].ki.wVk = 'c';
-    inputs[6].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    //jump
-    inputs[7].type = INPUT_KEYBOARD;
-    inputs[7].ki.wVk = VK_SPACE;
-    inputs[7].ki.dwFlags = KEYEVENTF_KEYUP;
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = VK_RIGHT;
+    if (!right)
+    {
+        inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
 
     UINT uSent = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
     if (uSent != ARRAYSIZE(inputs))

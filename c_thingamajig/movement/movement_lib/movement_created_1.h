@@ -6,4 +6,4 @@
 #define MOVEMENTLIB_API __declspec(dllimport)
 #endif
 
-extern "C" MOVEMENTLIB_API void test_AGH();
+extern "C" MOVEMENTLIB_API void movement_init();

@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\Mover_cooler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|solutionrelative:Mover_cooler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\movement_created_1.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|solutionrelative:movement_created_1.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\Mover_cooler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|solutionrelative:Mover_cooler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E7351C8-170C-4A93-B26D-4CDDA470F03A}|movement_lib.vcxproj|C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\pch.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -34,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -46,26 +46,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Mover_cooler.cpp",
               "DocumentMoniker": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\Mover_cooler.cpp",
               "RelativeDocumentMoniker": "Mover_cooler.cpp",
               "ToolTip": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\Mover_cooler.cpp",
               "RelativeToolTip": "Mover_cooler.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABUAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-10-01T16:31:43.04Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "movement_created_1.h",
               "DocumentMoniker": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\movement_created_1.h",
               "RelativeDocumentMoniker": "movement_created_1.h",
               "ToolTip": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\movement_created_1.h",
               "RelativeToolTip": "movement_created_1.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAoAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-10-01T16:27:49.341Z",
               "EditorCaption": ""
@@ -80,8 +80,7 @@
               "RelativeToolTip": "pch.h",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-01T16:17:04.614Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T16:17:04.614Z"
             },
             {
               "$type": "Document",
@@ -105,8 +104,7 @@
               "RelativeToolTip": "pch.cpp",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-01T16:16:43.867Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T16:16:43.867Z"
             },
             {
               "$type": "Document",

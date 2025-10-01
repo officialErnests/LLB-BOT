@@ -69,6 +69,7 @@ LLBlazze.py - holds all classes for game like ball and others as well do calcula
 > At this point i got so sick and tierd of this that i pulled out visual studio (not vs code XD)
 4. https://learn.microsoft.com/en-us/cpp/build/walkthrough-creating-and-using-a-dynamic-link-library-cpp?view=msvc-170
 5. https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
+6. https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-keybdinput
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

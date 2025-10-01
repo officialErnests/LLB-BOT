@@ -47,7 +47,7 @@ class llb_bot:
         "s" : False,
         "a" : False,
     }
-
+    main_loop = True
     prev_time = 0
     prev_fps = [0 for n in range(5)]
     def __init__(self, windowName):
@@ -55,56 +55,29 @@ class llb_bot:
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
     
+    #main function
     def run(self):
         start_time = time.time()
-        while (True):
+        while (self.main_loop):
             prev_time = time.time()
 
             if self.detailed_debuger: debugTimer = time.time()
 
             #init img
-            img_hsv_value = None
-            start_img = None
-            if self.window_set:
-                if self.detailed_debuger: debugTimer_bot = time.time()
-                self.coolRect = self.windows._getWindowRect()
-                # print(self.coolRect)
-                #What an beutifull code :))
-                if self.detailed_debuger:
-                    print("-Window rect :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-                
-                screenshot = pyautogui.screenshot()\
-                    .crop((self.coolRect.left + window_cut.left,
-                            self.coolRect.top + window_cut.top,
-                            self.coolRect.right - window_cut.right,
-                            self.coolRect.bottom - window_cut.bottom))
-                if self.detailed_debuger:
-                    print("-Screenshot :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-                open_cv_screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
-                img_hsv_value = cv.cvtColor(open_cv_screenshot, cv.COLOR_BGR2HSV)
-                start_img = open_cv_screenshot
-                if self.detailed_debuger:
-                    print("-Color convert :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-            else:
-                img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
-                start_img = self.img_test
-            if self.detailed_debuger:
-                print("Loaded img in:" + str(round(time.time() - debugTimer,3)))
-                debugTimer = time.time()
+            start_img, img_hsv_value = self.get_image()
+            
 
-
+            #detection cycle
             self.detect_player(start_img, img_hsv_value)
             if self.detailed_debuger:
                 print("Player detected:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
 
-            self.detect_hit(start_img, img_hsv_value)
-            if self.detailed_debuger:
-                print("Hit detected:" + str(round(time.time() - debugTimer,3)))
-                debugTimer = time.time()
+            #who needs this bs??
+            # self.detect_hit(start_img, img_hsv_value)
+            # if self.detailed_debuger:
+            #     print("Hit detected:" + str(round(time.time() - debugTimer,3)))
+            #     debugTimer = time.time()
 
             self.detect_ball(start_img, img_hsv_value)
             if self.detailed_debuger:
@@ -124,57 +97,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #bot
-            inputs = {
-                "Hit" : False,
-                "Jump" : False,
-                "Left" : False,
-                "Right" : False
-            }
-            if self.bot_enabled:
-                if self.detailed_debuger: debugTimer_bot = time.time()
-                
-                cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
-                #handles hitting
-                if self.inputs["Hit"] and self.hit_enabled:
-                    inputs["Hit"] = True
-                if self.detailed_debuger:
-                    print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                #handles jump
-                if self.inputs["jump_timer"] <= 0:
-                    self.inputs["jump_timer"] = self.jump_delay
-                    inputs["Jump"] = False
-                elif self.inputs["jump"]:
-                    self.inputs["jump_timer"] -= time.time() - prev_time
-                    inputs["Jump"] = True
-                if self.detailed_debuger:
-                    print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                #handles walking
-                match self.inputs["walk_direction"]:
-                    case -1:
-                        inputs["Left"] = True
-                    case 0:
-                        #if both disabled ;)
-                        pass
-                    case 1:
-                        inputs["Right"] = True
-                    case _:
-                        #if both passed ;)
-                        pass
-                if self.detailed_debuger:
-                    print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                #sends input to c
-                lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
-            else:
-                cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
-            if self.detailed_debuger:
-                print("Bot processed:" + str(round(time.time() - debugTimer,3)))
-                debugTimer = time.time()
+            self.bot_movement(start_img, prev_time)
 
             #Displays if hit is enabled 
             if self.hit_enabled:
@@ -199,66 +122,175 @@ class llb_bot:
             cv.waitKey(1)
 
             #inputs
-            if  keyboard.is_pressed("q"):
-                cv.destroyAllWindows()
-                lib_move.movement(False, False, False, False)
-                break
-            if keyboard.is_pressed("w"):
-                if not self.debounces["w"]:
-                    self.inputs["walk_direction"] = 0
-                    self.debounces["w"] = True
-                    self.bot_enabled = not self.bot_enabled
-                    if not self.bot_enabled:
-                        lib_move.movement(False, False, False, False)
-            else:
-                self.debounces["w"] = False
-                
-            if keyboard.is_pressed("r"):
-                if not self.debounces["r"]:
-                    self.debounces["r"] = True
-                    self.game.game_start = False
-            else:
-                self.debounces["r"] = False
+            self.handle_inputs()
 
-            if keyboard.is_pressed("s"):
-                if not self.debounces["s"]:
-                    self.debounces["s"] = True
-                    self.hit_enabled = not self.hit_enabled
-            else:
-                self.debounces["s"] = False
+    
+    #pulled out func for clarities sake
+    def get_image(self):
+        img_hsv_value = None
+        start_img = None
+        if self.window_set:
+            if self.detailed_debuger: debugTimer_bot = time.time()
+            self.coolRect = self.windows._getWindowRect()
+            # print(self.coolRect)
+            #What an beutifull code :))
+            if self.detailed_debuger:
+                print("-Window rect :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
             
-            if keyboard.is_pressed("e"):
-                if not self.debounces["e"]:
-                    self.debounces["e"] = True
-                    self.detailed_debuger = not self.detailed_debuger
-            else:
-                self.debounces["e"] = False
+            screenshot = pyautogui.screenshot()\
+                .crop((self.coolRect.left + window_cut.left,
+                        self.coolRect.top + window_cut.top,
+                        self.coolRect.right - window_cut.right,
+                        self.coolRect.bottom - window_cut.bottom))
+            if self.detailed_debuger:
+                print("-Screenshot :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+            open_cv_screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
+            img_hsv_value = cv.cvtColor(open_cv_screenshot, cv.COLOR_BGR2HSV)
+            start_img = open_cv_screenshot
+            if self.detailed_debuger:
+                print("-Color convert :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+        else:
+            img_hsv_value = cv.cvtColor(self.img_test, cv.COLOR_BGR2HSV)
+            start_img = self.img_test
+        if self.detailed_debuger:
+            print("Loaded img in:" + str(round(time.time() - debugTimer,3)))
+            debugTimer = time.time()
+        return start_img, img_hsv_value
 
-            if keyboard.is_pressed("a"):
-                if not self.debounces["a"]:
-                    self.debounces["a"] = True
-                    if len(self.game.players) > 0:
-                        print("A")
+    def bot_movement(self, start_img, prev_time):
+        inputs = {
+            "Hit" : False,
+            "Jump" : False,
+            "Left" : False,
+            "Right" : False
+        }
+        if self.bot_enabled:
+            if self.detailed_debuger: debugTimer_bot = time.time()
+            
+            cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            #handles hitting
+            if self.inputs["Hit"] and self.hit_enabled:
+                inputs["Hit"] = True
+            if self.detailed_debuger:
+                print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+
+            #handles jump
+            if self.inputs["jump_timer"] <= 0:
+                self.inputs["jump_timer"] = self.jump_delay
+                inputs["Jump"] = False
+            elif self.inputs["jump"]:
+                self.inputs["jump_timer"] -= time.time() - prev_time
+                inputs["Jump"] = True
+            if self.detailed_debuger:
+                print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+
+            #handles walking
+            match self.inputs["walk_direction"]:
+                case -1:
+                    inputs["Left"] = True
+                case 0:
+                    #if both disabled ;)
+                    pass
+                case 1:
+                    inputs["Right"] = True
+                case _:
+                    #if both passed ;)
+                    pass
+            if self.detailed_debuger:
+                print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+
+            #sends input to c
+            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
+        else:
+            cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+        if self.detailed_debuger:
+            print("Bot processed:" + str(round(time.time() - debugTimer,3)))
+            debugTimer = time.time()
+
+    def handle_inputs(self):
+        if  keyboard.is_pressed("q"):
+            cv.destroyAllWindows()
+            lib_move.movement(False, False, False, False)
+            self.main_loop = False
+            return
+        if keyboard.is_pressed("w"):
+            if not self.debounces["w"]:
+                self.inputs["walk_direction"] = 0
+                self.debounces["w"] = True
+                self.bot_enabled = not self.bot_enabled
+                if not self.bot_enabled:
+                    lib_move.movement(False, False, False, False)
+        else:
+            self.debounces["w"] = False
+            
+        if keyboard.is_pressed("r"):
+            if not self.debounces["r"]:
+                self.debounces["r"] = True
+                self.game.game_start = False
+        else:
+            self.debounces["r"] = False
+
+        if keyboard.is_pressed("s"):
+            if not self.debounces["s"]:
+                self.debounces["s"] = True
+                self.hit_enabled = not self.hit_enabled
+        else:
+            self.debounces["s"] = False
+        
+        if keyboard.is_pressed("e"):
+            if not self.debounces["e"]:
+                self.debounces["e"] = True
+                self.detailed_debuger = not self.detailed_debuger
+        else:
+            self.debounces["e"] = False
+
+        if keyboard.is_pressed("a"):
+            if not self.debounces["a"]:
+                self.debounces["a"] = True
+                if len(self.game.players) > 0:
+                    lib_move.movement(False, False, False, False)
+                    self.game.players[0].speed = 0
+                    time.sleep(0.1)
+                    lib_move.movement(False, False, False, True)
+                    time.sleep(0.1)
+                    lib_move.movement(False, False, False, False)
+                    calib_len = 5
+                    for i in range(calib_len):
+                        time.sleep(0.3)
                         prev_playerPos = self.game.players[0].position.x
-                        time.sleep(0.1)
-                        lib_move.movement(False, False, False, False)
-                        time.sleep(0.1)
                         lib_move.movement(False, False, False, True)
-                        time.sleep(0.2)
-                        lib_move.movement(False, False, False, True)
-                        time.sleep(0.1)
+                        time.sleep(0.5)
+                        #refreshes image and takes mesure
+                        start_img, img_hsv_value = self.get_image()
                         self.detect_player(start_img, img_hsv_value)
-                        self.game.players[0].speed = self.game.players[0].position.x - prev_playerPos
+                        self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
                         print(self.game.players[0].speed)
                         lib_move.movement(False, False, False, False)
-            else:
-                self.debounces["a"] = False
-            
-            #final debug print :))
-            if self.detailed_debuger and not self.debounces["e"]:
-                print("Inputs processed:" + str(round(time.time() - debugTimer,3)))
-                debugTimer = time.time()
+                        time.sleep(0.3)
+                        lib_move.movement(False, False, True, False)
+                        time.sleep(0.5)
+                        #refreshes image and takes mesure
+                        start_img, img_hsv_value = self.get_image()
+                        self.detect_player(start_img, img_hsv_value)
+                        self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
+                        print(self.game.players[0].speed)
+                        lib_move.movement(False, False, False, False)
+        else:
+            self.debounces["a"] = False
+        
+        #final debug print :))
+        if self.detailed_debuger and not self.debounces["e"]:
+            print("Inputs processed:" + str(round(time.time() - debugTimer,3)))
+            debugTimer = time.time()
     
+    
+    #others aka 2nd in tree
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
         var = 65/2

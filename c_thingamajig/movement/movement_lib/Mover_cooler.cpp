@@ -22,7 +22,7 @@ void movement(bool hit, bool jump, bool left, bool right) {
     //jump
     inputs[1].type = INPUT_KEYBOARD;
     inputs[1].ki.wVk = VK_SPACE;
-    if (!left)
+    if (!jump)
     {
         inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
     }

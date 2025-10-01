@@ -100,6 +100,7 @@ class ball_class:
 class player_class:
     position : vector2D = None
     charecter = None
+    speed : 0
     def __init__(self, position, character):
         self.position = position
         self.character = character

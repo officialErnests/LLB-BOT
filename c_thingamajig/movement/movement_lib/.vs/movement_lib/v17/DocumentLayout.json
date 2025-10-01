@@ -44,7 +44,7 @@
               "RelativeDocumentMoniker": "Mover_cooler.cpp",
               "ToolTip": "C:\\Dev\\Py\\LLB-BOT\\c_thingamajig\\movement\\movement_lib\\Mover_cooler.cpp",
               "RelativeToolTip": "Mover_cooler.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAFAAAA",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAAACgAAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-10-01T16:31:43.04Z",
               "IsPinned": true,
@@ -61,8 +61,7 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-10-01T16:27:49.341Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -78,8 +77,7 @@
               "RelativeToolTip": "pch.h",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-01T16:17:04.614Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T16:17:04.614Z"
             },
             {
               "$type": "Document",
@@ -91,8 +89,7 @@
               "RelativeToolTip": "framework.h",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-01T16:17:02.918Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T16:17:02.918Z"
             },
             {
               "$type": "Document",

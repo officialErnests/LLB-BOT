@@ -43,7 +43,9 @@ class llb_bot:
     debounces = {
         "w" : False,
         "r" : False,
-        "e" : False
+        "e" : False,
+        "s" : False,
+        "a" : False,
     }
 
     prev_time = 0
@@ -114,7 +116,8 @@ class llb_bot:
             self.inputs["walk_direction"] = return_inputs["walk_direction"]
             self.inputs["jump"] = return_inputs["jump"]
             self.inputs["Hit"] = return_inputs["Hit"]
-            cv.putText(start_img, str(round(return_inputs["Hit_dist"],2)), (self.game.players[0].position.x + 25,self.game.players[0].position.y - 25), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            if 0 in self.game.players:
+                cv.putText(start_img, str(round(return_inputs["Hit_dist"],2)), (self.game.players[0].position.x + 25,self.game.players[0].position.y - 25), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
             if self.detailed_debuger:
                 print("Game updated:" + str(round(time.time() - debugTimer,3)))
@@ -164,6 +167,8 @@ class llb_bot:
                 if self.detailed_debuger:
                     print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
                     debugTimer = time.time()
+
+                #sends input to c
                 lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
             else:
                 cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
@@ -171,7 +176,7 @@ class llb_bot:
                 print("Bot processed:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
 
-            #Displays if hit is enabled
+            #Displays if hit is enabled 
             if self.hit_enabled:
                 cv.putText(start_img, "[s] Hit enabled", (400,70), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             else:
@@ -196,9 +201,7 @@ class llb_bot:
             #inputs
             if  keyboard.is_pressed("q"):
                 cv.destroyAllWindows()
-                pyautogui.keyUp("left")
-                pyautogui.keyUp("right")
-                pyautogui.keyUp("space")
+                lib_move.movement(False, False, False, False)
                 break
             if keyboard.is_pressed("w"):
                 if not self.debounces["w"]:
@@ -206,9 +209,7 @@ class llb_bot:
                     self.debounces["w"] = True
                     self.bot_enabled = not self.bot_enabled
                     if not self.bot_enabled:
-                        pyautogui.keyUp("left")
-                        pyautogui.keyUp("right")
-                        pyautogui.keyUp("space")
+                        lib_move.movement(False, False, False, False)
             else:
                 self.debounces["w"] = False
                 
@@ -232,10 +233,31 @@ class llb_bot:
                     self.detailed_debuger = not self.detailed_debuger
             else:
                 self.debounces["e"] = False
+
+            if keyboard.is_pressed("a"):
+                if not self.debounces["a"]:
+                    self.debounces["a"] = True
+                    if len(self.game.players) > 0:
+                        print("A")
+                        prev_playerPos = self.game.players[0].position.x
+                        time.sleep(0.1)
+                        lib_move.movement(False, False, False, False)
+                        time.sleep(0.1)
+                        lib_move.movement(False, False, False, True)
+                        time.sleep(0.2)
+                        lib_move.movement(False, False, False, True)
+                        time.sleep(0.1)
+                        self.detect_player(start_img, img_hsv_value)
+                        self.game.players[0].speed = self.game.players[0].position.x - prev_playerPos
+                        print(self.game.players[0].speed)
+                        lib_move.movement(False, False, False, False)
+            else:
+                self.debounces["a"] = False
+            
+            #final debug print :))
             if self.detailed_debuger and not self.debounces["e"]:
                 print("Inputs processed:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
-            
     
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape

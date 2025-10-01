@@ -114,6 +114,8 @@ class llb_bot:
             self.inputs["walk_direction"] = return_inputs["walk_direction"]
             self.inputs["jump"] = return_inputs["jump"]
             self.inputs["Hit"] = return_inputs["Hit"]
+            cv.putText(start_img, str(round(return_inputs["Hit_dist"],2)), (self.game.players[0].position.x + 25,self.game.players[0].position.y - 25), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
             if self.detailed_debuger:
                 print("Game updated:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
@@ -128,7 +130,7 @@ class llb_bot:
             if self.bot_enabled:
                 if self.detailed_debuger: debugTimer_bot = time.time()
                 
-                cv.putText(start_img, "[w] Bot enabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+                cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
                 #handles hitting
                 if self.inputs["Hit"] and self.hit_enabled:
                     inputs["Hit"] = True
@@ -164,10 +166,16 @@ class llb_bot:
                     debugTimer = time.time()
                 lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
             else:
-                cv.putText(start_img, "[w] Bot disabled", (400,50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+                cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
             if self.detailed_debuger:
                 print("Bot processed:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
+
+            #Displays if hit is enabled
+            if self.hit_enabled:
+                cv.putText(start_img, "[s] Hit enabled", (400,70), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            else:
+                cv.putText(start_img, "[s] Hit disabled", (400,70), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
                 
             #timers
@@ -214,7 +222,7 @@ class llb_bot:
             if keyboard.is_pressed("s"):
                 if not self.debounces["s"]:
                     self.debounces["s"] = True
-                    self.game.game_start = False
+                    self.hit_enabled = not self.hit_enabled
             else:
                 self.debounces["s"] = False
             

@@ -131,7 +131,8 @@ class gamedata:
             return_inputs = {
                 "walk_direction" : 0,
                 "jump" : False,
-                "Hit" : False
+                "Hit" : False,
+                "Hit_dist" : -1,
             }
             return return_inputs
         elif len(self.prev_hits) > 0:
@@ -152,7 +153,7 @@ class gamedata:
         return_inputs = {
             "walk_direction" : -1 if self.players[0].position.x > self.ball.position.x else 1,
             "jump" : self.players[0].position.y > self.ball.position.y,
-            "Hit" : self.players[0].position.distance_to(self.ball.position) < 200
+            "Hit" : self.players[0].position.distance_to(self.ball.position) < 200,
+            "Hit_dist" : self.players[0].position.distance_to(self.ball.position),
         }
-        print(self.players[0].position.distance_to(self.ball.position))
         return return_inputs

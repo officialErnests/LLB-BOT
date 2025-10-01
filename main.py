@@ -4,17 +4,9 @@ from pstats import SortKey, Stats
 
 #importing c or some shit like that
 from ctypes import cdll
-lib_move = cdll.LoadLibrary('./c_thingamajig/movement/movement_main.h')
+lib_move = cdll.LoadLibrary('.\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\movement_lib.dll')
 
-class mover(object):
-    def __init__(self):
-        self.obj = lib_move.Foo_new()
-    
-    def mainFunc(self):
-        lib_move.Foo_bar(self.obj)
-
-mover_test = mover()
-mover_test.mainFunc()
+lib_move.test_AGH()
 
 bot1 = llb_bot("LLBlaze")
 bot1.run()

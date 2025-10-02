@@ -5,10 +5,10 @@
 #include <WinUser.h>
 using namespace std;
 
-void movement(bool hit, bool jump, bool left, bool right) {
+void movement(bool hit, bool jump, bool left, bool right, bool up) {
 
 
-    INPUT inputs[8] = {};
+    INPUT inputs[5] = {};
     ZeroMemory(inputs, sizeof(inputs));
 
     //hit
@@ -41,6 +41,14 @@ void movement(bool hit, bool jump, bool left, bool right) {
     if (!right)
     {
         inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+
+    //up
+    inputs[4].type = INPUT_KEYBOARD;
+    inputs[4].ki.wVk = VK_UP;
+    if (!up)
+    {
+        inputs[4].ki.dwFlags = KEYEVENTF_KEYUP;
     }
 
     UINT uSent = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));

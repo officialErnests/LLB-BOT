@@ -206,7 +206,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #sends input to c
-            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"])
+            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], True)
         else:
             cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
         if self.detailed_debuger:
@@ -216,7 +216,7 @@ class llb_bot:
     def handle_inputs(self):
         if  keyboard.is_pressed("q"):
             cv.destroyAllWindows()
-            lib_move.movement(False, False, False, False)
+            lib_move.movement(False, False, False, False, False)
             self.main_loop = False
             return
         if keyboard.is_pressed("w"):
@@ -225,7 +225,7 @@ class llb_bot:
                 self.debounces["w"] = True
                 self.bot_enabled = not self.bot_enabled
                 if not self.bot_enabled:
-                    lib_move.movement(False, False, False, False)
+                    lib_move.movement(False, False, False, False, False)
         else:
             self.debounces["w"] = False
             
@@ -254,35 +254,56 @@ class llb_bot:
             if not self.debounces["a"]:
                 self.debounces["a"] = True
                 if len(self.game.players) > 0:
-                    lib_move.movement(False, False, False, False)
+                    lib_move.movement(False, False, False, False, False)
                     self.game.players[0].speed = 0
                     time.sleep(0.1)
-                    lib_move.movement(False, False, False, True)
+                    lib_move.movement(False, False, True, False, False)
                     time.sleep(0.1)
-                    lib_move.movement(False, False, False, False)
-                    calib_len = 5
-                    for i in range(calib_len):
-                        time.sleep(0.3)
-                        prev_playerPos = self.game.players[0].position.x
-                        lib_move.movement(False, False, False, True)
-                        time.sleep(0.5)
-                        #refreshes image and takes mesure
-                        start_img, img_hsv_value = self.get_image()
-                        self.detect_player(start_img, img_hsv_value)
-                        self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
-                        print(self.game.players[0].speed)
-                        lib_move.movement(False, False, False, False)
-                        time.sleep(0.3)
-                        lib_move.movement(False, False, True, False)
-                        time.sleep(0.5)
-                        #refreshes image and takes mesure
-                        start_img, img_hsv_value = self.get_image()
-                        self.detect_player(start_img, img_hsv_value)
-                        self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
-                        print(self.game.players[0].speed)
-                        lib_move.movement(False, False, False, False)
+                    lib_move.movement(False, False, False, False, True)
+                    start_img, img_hsv_value = self.get_image()
+                    self.detect_player(start_img, img_hsv_value)
+                    prev_playerPos = self.game.players[0].position.x
+                    lib_move.movement(False, False, False, True, False)
+                    time.sleep(0.2)
+                    start_img, img_hsv_value = self.get_image()
+                    self.detect_player(start_img, img_hsv_value)
+                    self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos)
+                    lib_move.movement(False, False, False, False, False)
+                    print(self.game.players[0].speed)
+                    # calib_len = 5
+                    # for i in range(calib_len):
+                    #     time.sleep(0.3)
+                    #     prev_playerPos = self.game.players[0].position.x
+                    #     lib_move.movement(False, False, False, True, False)
+                    #     time.sleep(0.5)
+                    #     #refreshes image and takes mesure
+                    #     start_img, img_hsv_value = self.get_image()
+                    #     self.detect_player(start_img, img_hsv_value)
+                    #     self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
+                    #     print(self.game.players[0].speed)
+                    #     lib_move.movement(False, False, False, False, False)
+                    #     time.sleep(0.3)
+                    #     lib_move.movement(False, False, True, False, False)
+                    #     time.sleep(0.5)
+                    #     #refreshes image and takes mesure
+                    #     start_img, img_hsv_value = self.get_image()
+                    #     self.detect_player(start_img, img_hsv_value)
+                    #     self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
+                    #     print(self.game.players[0].speed)
+                    #     lib_move.movement(False, False, False, False, False)
         else:
             self.debounces["a"] = False
+        if keyboard.is_pressed("d"):
+            lib_move.movement(False, False, False, False, True)
+            time.sleep(1/240)
+            lib_move.movement(False, False, True, False, False)
+            time.sleep(1/240)
+            lib_move.movement(False, False, False, False, True)
+            time.sleep(1/240)
+            lib_move.movement(False, False, False, True, False)
+            time.sleep(1/240)
+            lib_move.movement(False, False, False, False, True)
+
         
         #final debug print :))
         if self.detailed_debuger and not self.debounces["e"]:

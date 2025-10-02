@@ -57,6 +57,7 @@ class ball_class:
     position : vector2D = None
     last_positions = []
     range = 0
+    ball_speed = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -66,6 +67,19 @@ class ball_class:
     def update(self):
         self.last_positions.pop(0)
         self.last_positions.append(self.position)
+
+        #Get's the ball speed
+        last_pos = None
+        temp_speed = 0
+        for pos in self.last_positions:
+            if last_pos is None:
+                last_pos = pos
+            temp_speed += pos.distance_to(last_pos) / (self.range + 1)
+            last_pos = pos
+        self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
+        print(self.ball_speed)
+            
+            
     
     def draw(self, image):
             color = (100, 100, 0) if self.state == 1 else (0, 0, 100)

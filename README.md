@@ -53,6 +53,10 @@ NO **4285%** speed increase... that was definatly worth it XD
 
 > Resources also just formyself so i rember them :))
 > i have made so many but now i'm doing for gigs and gas XD (to see how much resources i use :DD)
+# Math with desmos
+## Started this late but eh better than never
+Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
+(follow red line XD)
 # Docs used
 ## Py
 1. https://medium.com/@sasasulakshi/opencv-object-masking-b3143e310d03

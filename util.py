@@ -72,12 +72,16 @@ class llb_bot:
             if self.detailed_debuger:
                 print("Player detected:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
+            else:
+                debugTimer = 0
 
-            #who needs this bs??
-            # self.detect_hit(start_img, img_hsv_value)
-            # if self.detailed_debuger:
-            #     print("Hit detected:" + str(round(time.time() - debugTimer,3)))
-            #     debugTimer = time.time()
+            #who needs this bs?? - past me
+            #past me was soopid, i need this since each hit the balls angle is set so i can read it XD
+            #so this will help increase acuracity :DD
+            self.detect_hit(start_img, img_hsv_value)
+            if self.detailed_debuger:
+                print("Hit detected:" + str(round(time.time() - debugTimer,3)))
+                debugTimer = time.time()
 
             self.detect_ball(start_img, img_hsv_value)
             if self.detailed_debuger:
@@ -97,7 +101,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #bot
-            self.bot_movement(start_img, prev_time)
+            self.bot_movement(start_img, prev_time, debugTimer)
 
             #Displays if hit is enabled 
             if self.hit_enabled:
@@ -122,7 +126,7 @@ class llb_bot:
             cv.waitKey(1)
 
             #inputs
-            self.handle_inputs()
+            self.handle_inputs(debugTimer)
 
     
     #pulled out func for clarities sake
@@ -160,7 +164,7 @@ class llb_bot:
             debugTimer = time.time()
         return start_img, img_hsv_value
 
-    def bot_movement(self, start_img, prev_time):
+    def bot_movement(self, start_img, prev_time, debugTimer):
         inputs = {
             "Hit" : False,
             "Jump" : False,
@@ -213,7 +217,7 @@ class llb_bot:
             print("Bot processed:" + str(round(time.time() - debugTimer,3)))
             debugTimer = time.time()
 
-    def handle_inputs(self):
+    def handle_inputs(self, debugTimer):
         if  keyboard.is_pressed("q"):
             cv.destroyAllWindows()
             lib_move.movement(False, False, False, False, False)

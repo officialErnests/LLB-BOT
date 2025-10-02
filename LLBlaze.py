@@ -2,6 +2,7 @@ from enum import Enum
 from Real_utils import *
 import cv2 as cv
 import numpy as np
+import math
 
 #enums
 class ball_states(Enum):
@@ -58,6 +59,7 @@ class ball_class:
     last_positions = []
     range = 0
     ball_speed = 0
+    ball_angle = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -77,7 +79,13 @@ class ball_class:
             temp_speed += pos.distance_to(last_pos) / (self.range + 1)
             last_pos = pos
         self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
-        print(self.ball_speed)
+
+        # self.last_positions[self.range - 1]
+        # self.position
+        rads = self.position.angle_to(self.last_positions[self.range - 1])
+        norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
+        print(norm_rads)
+        # print(self.ball_speed)
             
             
     

@@ -81,21 +81,17 @@ class ball_class:
             last_pos = pos
         self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
 
-        # self.last_positions[self.range - 1]
-        # self.position
+        # calculates angle
         rads = self.position.rad_to(self.last_positions[self.range - 1])
         norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
-        self.ball_rad = self.ball_rad * 0.9 + norm_rads * 0.1
-        self.ball_direction = math.floor(rads /math.pi)
-        # print(self.ball_rad)
-        # print(self.ball_speed)
-            
+        #checks if the angle isn't valid
+        if abs(norm_rads - norm_rads) < math.pi/4:
+            self.ball_rad = self.ball_rad * 0.99 + norm_rads * 0.01
+            self.ball_direction = rads - self.ball_rad
             
     
     def draw(self, image):
             color = (100, 100, 0) if self.state == 1 else (0, 0, 100)
-            # print(str(self.last_positions))
-            #WHY
             cool_array = []
             for vec2D in self.last_positions:
                 cool_array.append(vec2D.arr())
@@ -109,7 +105,8 @@ class ball_class:
         positions = [self.position.arr()]
         start = self.position
         direction = vector2D(0,0)
-        direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi)
+        direction.vector_from_rad(self.ball_rad + self.ball_direction + math.pi)
+        direction = direction.normalize()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)
@@ -139,7 +136,7 @@ class gamedata:
     prev_hits = []
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos, [], 3)
+        self.ball = ball_class(ball_pos, [], 4)
         self.players.append(player_class(vector2D(0,0), "RAPTOR"))
         # TODO
         # for player in players:
@@ -173,7 +170,7 @@ class gamedata:
         self.stage.draw(image)
         self.ball.draw(image)
 
-        self.ball.prediction(image, self.stage, 4)
+        self.ball.prediction(image, self.stage, 10)
         
         #sends player input  c  c 
         return_inputs = {

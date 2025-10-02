@@ -54,6 +54,5 @@ class vector2D():
     def rad_to(self, vec2d):
         return math.atan2(vec2d.x - self.x, vec2d.y - self.y)
     def vector_from_rad(self, rad):
-        deg = math.degrees(rad)
-        self.x = math.cos(rad)
-        self.y = math.sin(-rad)
+        self.x = math.sin(rad)
+        self.y = math.cos(rad)

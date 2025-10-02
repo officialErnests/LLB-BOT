@@ -78,6 +78,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 14. https://www.geeksforgeeks.org/python/time-perf_counter-function-in-python
 15. https://stackoverflow.com/questions/66036844/time-time-or-time-perf-counter-which-is-faster
 16. https://realpython.com/python-profiling/
+17. https://stackoverflow.com/questions/9875964/how-can-i-convert-radians-to-degrees-with-python
 ## C
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes

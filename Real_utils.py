@@ -51,5 +51,9 @@ class vector2D():
         return math.sqrt(self.x**2 + self.y**2)
     def distance_to(self, vec2d):
         return (self - vec2d).len()
-    def angle_to(self, vec2d):
+    def rad_to(self, vec2d):
         return math.atan2(vec2d.x - self.x, vec2d.y - self.y)
+    def vector_from_rad(self, rad):
+        deg = math.degrees(rad)
+        self.x = math.cos(rad)
+        self.y = math.sin(-rad)

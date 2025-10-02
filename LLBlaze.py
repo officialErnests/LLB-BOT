@@ -59,7 +59,8 @@ class ball_class:
     last_positions = []
     range = 0
     ball_speed = 0
-    ball_angle = 0
+    ball_rad = 0
+    ball_direction = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -82,9 +83,11 @@ class ball_class:
 
         # self.last_positions[self.range - 1]
         # self.position
-        rads = self.position.angle_to(self.last_positions[self.range - 1])
+        rads = self.position.rad_to(self.last_positions[self.range - 1])
         norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
-        print(norm_rads)
+        self.ball_rad = self.ball_rad * 0.9 + norm_rads * 0.1
+        self.ball_direction = math.floor(rads /math.pi)
+        # print(self.ball_rad)
         # print(self.ball_speed)
             
             
@@ -102,11 +105,11 @@ class ball_class:
     
     def prediction(self, image, stage, line_amount):
         color = (255, 255, 0) if self.state == 1 else (0, 0, 255)
-        to_vector = ((self.last_positions[self.range - 1] - self.position).normalize()) * -1
         
         positions = [self.position.arr()]
         start = self.position
-        direction = to_vector
+        direction = vector2D(0,0)
+        direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi)
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)

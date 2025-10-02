@@ -59,6 +59,8 @@ class ball_class:
     last_positions = []
     range = 0
     ball_speed = 0
+    prev_rad = []
+    prev_rad_size = 10
     ball_rad = 0
     ball_direction = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
@@ -66,6 +68,10 @@ class ball_class:
         self.state = state
         self.range = position_history -1
         self.last_positions = [position for n in range(position_history)]
+        self.reset_rad()
+
+    def reset_rad(self):
+        self.prev_rad = [0 for n in range(self.prev_rad_size)]
 
     def update(self):
         self.last_positions.pop(0)
@@ -84,10 +90,26 @@ class ball_class:
         # calculates angle
         rads = self.position.rad_to(self.last_positions[self.range - 1])
         norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
+        self.prev_rad.pop(0)
+        self.prev_rad.append(norm_rads)
+        #filters data.. idk how just like 11.11pm rjn i'm tierd ;-;
+        sorted_arr = self.prev_rad
+        sorted_arr.sort()
+        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
+        avg = 0
+        avg_num = 1
+        range = 1
+        for x in sorted_arr:
+            if x < middle - range:
+                continue
+            elif x < middle + range:
+                avg = (avg * (avg_num - 1) + x) / avg_num
+                avg_num += 1
+            else:
+                break
         #checks if the angle isn't valid
-        if abs(norm_rads - norm_rads) < math.pi/4:
-            self.ball_rad = self.ball_rad * 0.99 + norm_rads * 0.01
-            self.ball_direction = rads - self.ball_rad
+        self.ball_rad = self.ball_rad * 0.99 + avg * 0.01
+        self.ball_direction = math.floor((rads*2) / math.pi)
             
     
     def draw(self, image):
@@ -105,7 +127,7 @@ class ball_class:
         positions = [self.position.arr()]
         start = self.position
         direction = vector2D(0,0)
-        direction.vector_from_rad(self.ball_rad + self.ball_direction + math.pi)
+        direction.vector_from_rad(self.ball_rad +  + math.pi)
         direction = direction.normalize()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)

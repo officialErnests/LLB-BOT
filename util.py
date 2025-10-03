@@ -194,8 +194,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #handles walking
-            target = self.calculate_next_pos(start_img)
-            self.inputs["walk_direction"] = -1 if target < 0 else 1
+            self.inputs["walk_direction"] = self.calculate_next_pos(start_img)
             match self.inputs["walk_direction"]:
                 case -1:
                     inputs["Left"] = True
@@ -324,14 +323,21 @@ class llb_bot:
         x2 = self.game.ball.position.x
         a = self.game.players[0].speed 
         b = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
-        b *= -1 if x1 < x2 else 1
-        print(b)
+        # print(b, x1 < x2)
         delta_x = x2 - x1
+        # b *= -1 if delta_x < 0 else 1
+        # Table or smthing
+        # b | pos | res
+        # - | - | +
+        # - | + | -
+        # + | - | +
+        # + | + | -
         pos = delta_x*a/(a+b)
         # print(delta_x)
-        pos_global = pos + x1
+        pos_global = pos + x2
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 1) 
-        return pos
+        # return 0
+        return -1 if pos_global < x1 else 1
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):

@@ -77,15 +77,15 @@ class ball_class:
 
     def update(self, delta):
         self.prew_speed.pop(0)
-        self.prew_speed.append(self.position.distance_to(self.last_positions) * delta)
+        self.prew_speed.append(self.position.distance_to(self.last_positions) / delta)
 
         #Get's the ball speed
         temp_speed = 0
         for pos in self.prew_speed:
             temp_speed += (pos / self.range)
         
-        print(temp_speed)
-        self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
+        self.ball_speed = self.ball_speed * 0.5 + temp_speed * 0.5
+        # print(self.ball_speed)
 
         #Get balls radiant
         rads = self.position.rad_to(self.last_positions)

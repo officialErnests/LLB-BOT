@@ -88,10 +88,13 @@ class ball_class:
         self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
 
         # calculates angle
+        #OH GOD WHAT I WAS ON YESTRADAY XXDD
         rads = self.position.rad_to(self.last_positions[self.range - 1])
         norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
+        #Todo WHATEVER THE BATSHIT IS THIS
         self.prev_rad.pop(0)
-        self.prev_rad.append(norm_rads)
+        self.prev_rad.append(round(norm_rads,1))
+        # print(norm_rads)
         #filters data.. idk how just like 11.11pm rjn i'm tierd ;-;
         sorted_arr = self.prev_rad
         sorted_arr.sort()
@@ -108,8 +111,9 @@ class ball_class:
             else:
                 break
         #checks if the angle isn't valid
-        self.ball_rad = self.ball_rad * 0.99 + avg * 0.01
+        self.ball_rad = norm_rads
         self.ball_direction = math.floor((rads*2) / math.pi)
+        # print(self.prev_rad)
             
     
     def draw(self, image):
@@ -127,16 +131,19 @@ class ball_class:
         positions = [self.position.arr()]
         start = self.position
         direction = vector2D(0,0)
-        direction.vector_from_rad(self.ball_rad +  + math.pi)
+        # print(self.ball_rad, self.ball_direction * math.pi)
+        direction.vector_from_rad(0)
+        # direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi + math.pi)
         direction = direction.normalize()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
+            print(direction, len)
             result = (start + direction * len)
             positions.append(result.arr())
             direction *= hit_wall
             start = result
 
-        pts = np.array([positions], dtype=np.int32)
+        pts = np.array([positions], dtype=np.int64)
         image = cv.polylines(image, [pts], 
                       False, color, 2)
         

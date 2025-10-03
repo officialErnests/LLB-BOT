@@ -176,7 +176,10 @@ class llb_bot:
             
             cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             #handles hitting
-            if self.inputs["Hit"] and self.hit_enabled:
+            if self.inputs["Hit_timer"] > 0:
+                self.inputs["Hit_timer"] -= time.time() - prev_time
+            elif self.inputs["Hit"] and self.hit_enabled:
+                self.inputs["Hit_timer"] = 0.1
                 inputs["Hit"] = True
             if self.detailed_debuger:
                 print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
@@ -210,7 +213,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #sends input to c
-            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], True)
+            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], False)
         else:
             cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
         if self.detailed_debuger:
@@ -330,6 +333,8 @@ class llb_bot:
                 if masked_screenshot[y,x] != 0:
                     detected += 1
         self.game.hit_amount = detected
+        if detected > 2:
+            self.game.ball.init_dir = 5
 
     def detect_player(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape

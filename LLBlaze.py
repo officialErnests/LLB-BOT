@@ -60,7 +60,7 @@ class ball_class:
     range = 0
     ball_speed = 0
     prev_rad = []
-    prev_rad_size = 100
+    prev_rad_size = 10
     ball_rad = 0
     ball_direction = 0
     back_dir = False
@@ -88,26 +88,24 @@ class ball_class:
             last_pos = pos
         self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
 
-        # calculates angle
-        #OH GOD WHAT I WAS ON YESTRADAY XXDD
+        #Get balls radiant
         rads = self.position.rad_to(self.last_positions[self.range - 1])
         norm_rads_uncaped = ((rads - (math.pi / 2)) % math.pi) - (math.pi / 2)
         norm_rads = abs(norm_rads_uncaped)
-        #Todo WHATEVER THE BATSHIT IS THIS
+
+
         if self.init_dir > 0:
             self.init_dir -= 1
             if self.init_dir == 0:
                 self.reset_rad(norm_rads)
             else:
                 return
+        
         self.prev_rad.pop(0)
         self.prev_rad.append(norm_rads)
-        # print(norm_rads)
-        #filters data.. idk how just like 11.11pm rjn i'm tierd ;-;
         sorted_arr = self.prev_rad.copy()
         sorted_arr.sort()
         middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
-        # print(middle)
         avg = 0
         avg_num = 1
         range = 0.1
@@ -118,25 +116,12 @@ class ball_class:
                 avg_num += 1
                 if x == norm_rads:
                     bad_data = False
-        #checks if the angle isn't valid
         self.ball_rad = avg
         self.back_dir = norm_rads_uncaped < 0
         if not bad_data:
             self.ball_direction = math.floor((rads*2) / math.pi)/2
-            # print(rads, norm_rads, self.ball_direction)
             if norm_rads_uncaped < 0:
                 self.ball_direction = self.ball_direction+0.5
-                # print(rads, norm_rads, self.ball_direction)
-        else:
-            print("Skiped", norm_rads, middle)
-        # print(self.prev_rad)
-        #1.596431735316574 1.545160918273219 -1.0707963267948966
-        #1.596431735316574 = pi - 1.545160918273219
-        #1.6030432092301505 1.5385494443596426 -1.5
-        #1.6030432092301505 1.5385494443596426 -1.5
-        # 2.5948038127005457 0.5467888408892474 0
-        # WHY DOES IT ONLY GO IN ONE WAY BOTH WAYS TF????
-        #bc 'im stoopid and used old formula witouth /2 in heinsaight i should have just used self.ball_direction in start iinstead of duplicating code XD
             
     
     def draw(self, image):
@@ -154,9 +139,6 @@ class ball_class:
         positions = [self.position.arr()]
         start = self.position
         direction = vector2D(0,0)
-        # print(self.ball_rad, self.ball_direction * math.pi)
-        # direction.vector_from_rad(self.ball_rad + math.pi)
-        # direction.vector_from_rad(self.ball_direction * math.pi)
         if self.back_dir:
             direction.vector_from_rad(-self.ball_rad + self.ball_direction * math.pi + math.pi)
         else:
@@ -164,7 +146,6 @@ class ball_class:
         direction = direction.normalize()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
-            # print(direction, len)
             result = (start + direction * len)
             positions.append(result.arr())
             direction *= hit_wall
@@ -228,7 +209,7 @@ class gamedata:
 
         self.ball.prediction(image, self.stage, 10)
         
-        #sends player input  c  c 
+        #sends player input
         return_inputs = {
             "walk_direction" : -1 if self.players[0].position.x > self.ball.position.x else 1,
             "jump" : self.players[0].position.y > self.ball.position.y,

@@ -32,7 +32,6 @@ class vector2D():
         if direction_vec.x == 0 and direction_vec.y == 0:
             return 0, 0
         if direction_vec.x == 0:
-            # print(y_distance, borders[1] - self.y, borders[3] - self.y)
             return abs(y_distance), vector2D(1, -1)
         if direction_vec.y == 0:
             return abs(x_distance), vector2D(-1, 1)

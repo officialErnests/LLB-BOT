@@ -63,6 +63,7 @@ class ball_class:
     prev_rad_size = 10
     ball_rad = 0
     ball_direction = 0
+    back_dir = False
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -90,7 +91,8 @@ class ball_class:
         # calculates angle
         #OH GOD WHAT I WAS ON YESTRADAY XXDD
         rads = self.position.rad_to(self.last_positions[self.range - 1])
-        norm_rads = abs(((rads - (math.pi / 2)) % math.pi) - (math.pi / 2))
+        norm_rads_uncaped = ((rads - (math.pi / 2)) % math.pi) - (math.pi / 2)
+        norm_rads = abs(norm_rads_uncaped)
         #Todo WHATEVER THE BATSHIT IS THIS
         self.prev_rad.pop(0)
         self.prev_rad.append(round(norm_rads,1))
@@ -112,8 +114,20 @@ class ball_class:
                 break
         #checks if the angle isn't valid
         self.ball_rad = norm_rads
-        self.ball_direction = math.floor((rads*2) / math.pi)
+        self.back_dir = norm_rads_uncaped < 0
+        self.ball_direction = math.floor((rads*2) / math.pi)/2
+        print(rads, norm_rads, self.ball_direction)
+        if norm_rads_uncaped < 0:
+            self.ball_direction = self.ball_direction+0.5
+            # print(rads, norm_rads, self.ball_direction)
         # print(self.prev_rad)
+        #1.596431735316574 1.545160918273219 -1.0707963267948966
+        #1.596431735316574 = pi - 1.545160918273219
+        #1.6030432092301505 1.5385494443596426 -1.5
+        #1.6030432092301505 1.5385494443596426 -1.5
+        # 2.5948038127005457 0.5467888408892474 0
+        # WHY DOES IT ONLY GO IN ONE WAY BOTH WAYS TF????
+        #bc 'im stoopid and used old formula witouth /2 in heinsaight i should have just used self.ball_direction in start iinstead of duplicating code XD
             
     
     def draw(self, image):
@@ -132,12 +146,16 @@ class ball_class:
         start = self.position
         direction = vector2D(0,0)
         # print(self.ball_rad, self.ball_direction * math.pi)
-        direction.vector_from_rad(0)
-        # direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi + math.pi)
+        # direction.vector_from_rad(self.ball_rad + math.pi)
+        # direction.vector_from_rad(self.ball_direction * math.pi)
+        if self.back_dir:
+            direction.vector_from_rad(-self.ball_rad + self.ball_direction * math.pi + math.pi)
+        else:
+            direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi + math.pi)
         direction = direction.normalize()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
-            print(direction, len)
+            # print(direction, len)
             result = (start + direction * len)
             positions.append(result.arr())
             direction *= hit_wall

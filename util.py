@@ -325,19 +325,20 @@ class llb_bot:
         b = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
         # print(b, x1 < x2)
         delta_x = x2 - x1
-        # b *= -1 if delta_x < 0 else 1
+        a *= -1 if delta_x < 0 else 1
         # Table or smthing
         # b | pos | res
         # - | - | +
         # - | + | -
         # + | - | +
         # + | + | -
+        print(a, b, delta_x, x1, x2)
         pos = delta_x*a/(a+b)
         # print(delta_x)
         pos_global = pos + x2
-        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 1) 
+        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 2) 
         # return 0
-        return -1 if pos_global < x1 else 1
+        return -1 if x2 < x1 else 1
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):

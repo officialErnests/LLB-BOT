@@ -333,7 +333,7 @@ class llb_bot:
         # + | - | +
         # + | + | -
         print(a, b, delta_x, x1, x2)
-        pos = delta_x*a/(a+b)
+        pos = -a * delta_x / (a - b)
         # print(delta_x)
         pos_global = pos + x2
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 2) 

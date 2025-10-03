@@ -82,6 +82,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 18. https://www.geeksforgeeks.org/data-science/detect-and-remove-the-outliers-using-python/
 19. https://www.statisticshowto.com/probability-and-statistics/z-score/
 20. https://www.statisticshowto.com/probability-and-statistics/statistics-definitions/mean-median-mode/
+21. https://www.geeksforgeeks.org/python/python-opencv-cv2-line-method/
 ## C
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes

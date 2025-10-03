@@ -56,40 +56,39 @@ class stage_class:
 class ball_class:
     state : ball_states
     position : vector2D = None
-    last_positions = []
     range = 0
     ball_speed = 0
     prev_rad = []
-    prev_rad_size = 10
+    prev_rad_size = 20
     ball_rad = 0
     ball_direction = 0
     back_dir = False
     init_dir = 2
+    last_positions = vector2D(0,0)
+    prew_speed = []
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
-        self.range = position_history -1
-        self.last_positions = [position for n in range(position_history)]
+        self.range = position_history
+        self.prew_speed = [0 for n in range(position_history)]
 
     def reset_rad(self, rads):
         self.prev_rad = [rads for n in range(self.prev_rad_size)]
 
-    def update(self):
-        self.last_positions.pop(0)
-        self.last_positions.append(self.position)
+    def update(self, delta):
+        self.prew_speed.pop(0)
+        self.prew_speed.append(self.position.distance_to(self.last_positions) * delta)
 
         #Get's the ball speed
-        last_pos = None
         temp_speed = 0
-        for pos in self.last_positions:
-            if last_pos is None:
-                last_pos = pos
-            temp_speed += pos.distance_to(last_pos) / (self.range + 1)
-            last_pos = pos
+        for pos in self.prew_speed:
+            temp_speed += (pos / self.range)
+        
+        print(temp_speed)
         self.ball_speed = self.ball_speed * 0.9 + temp_speed * 0.1
 
         #Get balls radiant
-        rads = self.position.rad_to(self.last_positions[self.range - 1])
+        rads = self.position.rad_to(self.last_positions)
         norm_rads_uncaped = ((rads - (math.pi / 2)) % math.pi) - (math.pi / 2)
         norm_rads = abs(norm_rads_uncaped)
 
@@ -122,13 +121,17 @@ class ball_class:
             self.ball_direction = math.floor((rads*2) / math.pi)/2
             if norm_rads_uncaped < 0:
                 self.ball_direction = self.ball_direction+0.5
+        
+        self.last_positions = self.position
             
     
     def draw(self, image):
+            print("Depricated func ball.draw()")
+            return #DEPRICATED BC CHANGES ON HOW THE last_positions WORKS XD
             color = (100, 100, 0) if self.state == 1 else (0, 0, 100)
             cool_array = []
             for vec2D in self.last_positions:
-                cool_array.append(vec2D.arr())
+                cool_array.append(last_positions)
             pts = np.array(cool_array)
             image = cv.polylines(image, [pts], 
                       False, color, 2)
@@ -138,12 +141,7 @@ class ball_class:
         
         positions = [self.position.arr()]
         start = self.position
-        direction = vector2D(0,0)
-        if self.back_dir:
-            direction.vector_from_rad(-self.ball_rad + self.ball_direction * math.pi + math.pi)
-        else:
-            direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi + math.pi)
-        direction = direction.normalize()
+        direction = self.get_directional_vector()
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)
@@ -154,12 +152,21 @@ class ball_class:
         pts = np.array([positions], dtype=np.int64)
         image = cv.polylines(image, [pts], 
                       False, color, 2)
+    
+    def get_directional_vector(self):
+        direction = vector2D(0,0)
+        if self.back_dir:
+            direction.vector_from_rad(-self.ball_rad + self.ball_direction * math.pi + math.pi)
+        else:
+            direction.vector_from_rad(self.ball_rad + self.ball_direction * math.pi + math.pi)
+        direction = direction.normalize()
+        return direction
         
 
 class player_class:
     position : vector2D = None
     charecter = None
-    speed : 0
+    speed = 0
     def __init__(self, position, character):
         self.position = position
         self.character = character
@@ -178,7 +185,7 @@ class gamedata:
         # TODO
         # for player in players:
         #     self.players.append(player)
-    def update(self, image):
+    def update(self, image, delta):
         if self.hit_amount > 0:
             self.prev_hits.append(self.hit_amount)
             estimate = 0
@@ -186,7 +193,7 @@ class gamedata:
                 estimate += self.prev_hits[x]
             estimate /= len(self.prev_hits)
             self.stage.draw(image)
-            self.ball.draw(image)
+            # self.ball.draw(image)
             self.ball.prediction(image, self.stage, 10)
             return_inputs = {
                 "walk_direction" : 0,
@@ -197,7 +204,8 @@ class gamedata:
             return return_inputs
         elif len(self.prev_hits) > 0:
             self.prev_hits = []
-        self.ball.update()
+
+        self.ball.update(delta)
         if not self.game_start:
             self.game_start = True
             self.stage.reset(self.ball.position)
@@ -205,13 +213,12 @@ class gamedata:
 
         #debug stuff
         self.stage.draw(image)
-        self.ball.draw(image)
+        # self.ball.draw(image)
 
         self.ball.prediction(image, self.stage, 10)
         
         #sends player input
         return_inputs = {
-            "walk_direction" : -1 if self.players[0].position.x > self.ball.position.x else 1,
             "jump" : self.players[0].position.y > self.ball.position.y,
             "Hit" : self.players[0].position.distance_to(self.ball.position) < 200,
             "Hit_dist" : self.players[0].position.distance_to(self.ball.position),

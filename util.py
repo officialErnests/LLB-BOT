@@ -75,9 +75,7 @@ class llb_bot:
             else:
                 debugTimer = 0
 
-            #who needs this bs?? - past me
-            #past me was soopid, i need this since each hit the balls angle is set so i can read it XD
-            #so this will help increase acuracity :DD
+            #Detects when ball is hit
             self.detect_hit(start_img, img_hsv_value)
             if self.detailed_debuger:
                 print("Hit detected:" + str(round(time.time() - debugTimer,3)))
@@ -89,8 +87,7 @@ class llb_bot:
                 debugTimer = time.time()
             
             #update game
-            return_inputs = self.game.update(start_img)
-            self.inputs["walk_direction"] = return_inputs["walk_direction"]
+            return_inputs = self.game.update(start_img, time.time() - self.prev_time)
             self.inputs["jump"] = return_inputs["jump"]
             self.inputs["Hit"] = return_inputs["Hit"]
             if 0 in self.game.players:
@@ -197,6 +194,8 @@ class llb_bot:
                 debugTimer = time.time()
 
             #handles walking
+            target = self.calculate_next_pos(start_img)
+            self.inputs["walk_direction"] = -1 if target < 0 else 1
             match self.inputs["walk_direction"]:
                 case -1:
                     inputs["Left"] = True
@@ -319,6 +318,22 @@ class llb_bot:
     
     
     #others aka 2nd in tree
+
+    def calculate_next_pos(self, start_img):
+        x1 = self.game.players[0].position.x
+        x2 = self.game.ball.position.x
+        a = self.game.players[0].speed 
+        b = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+        b *= -1 if x1 < x2 else 1
+        print(b)
+        delta_x = x2 - x1
+        pos = delta_x*a/(a+b)
+        # print(delta_x)
+        pos_global = pos + x1
+        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 1) 
+        return pos
+        # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
+
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
         var = 65/2

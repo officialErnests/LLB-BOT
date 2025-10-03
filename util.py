@@ -188,7 +188,8 @@ class llb_bot:
                 inputs["Jump"] = False
             elif self.inputs["jump"]:
                 self.inputs["jump_timer"] -= time.time() - prev_time
-                inputs["Jump"] = True
+                # DEBUG
+                # inputs["Jump"] = True
             if self.detailed_debuger:
                 print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
                 debugTimer = time.time()
@@ -332,27 +333,31 @@ class llb_bot:
         players_speed *= -1 if balls_position < players_position else 1
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
         pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-        #displays players speed
-        cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
-
         #checks if out of bounds
         # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         # return -1 if pos_global < players_position else 1
         if self.game.stage.left > pos_global:
+            #gets distance till wall so player can be moved
             distance_till_wall = (balls_position - self.game.stage.left) / balls_speed
 
-            players_position = self.game.players[0].position.x + players_speed * distance_till_wall
-            balls_position = distance_till_wall
-            players_speed = self.game.players[0].speed 
-            balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+            players_position += players_speed * distance_till_wall
+            balls_position = self.game.stage.left
+            balls_speed *= -1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-            return -1 if pos_global < players_position else 1
         elif self.game.stage.right < pos_global:
+            #gets distance till wall so player can be moved
+            distance_till_wall = (self.game.stage.right - balls_position) / balls_speed
 
-            return -1 if pos_global < players_position else 1
-        else:
-            cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
-            return -1 if pos_global < players_position else 1
+            players_position += players_speed * distance_till_wall
+            balls_position = self.game.stage.right
+            balls_speed *= -1
+            pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
+
+        #displays players speed and prediction
+        cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
+        # return 0
+        return -1 if pos_global < players_position else 1
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):

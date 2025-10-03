@@ -24,6 +24,8 @@ E - debug prints time
 R - resets the border for map (when you end game or start new one)
 S - enable hit mode (aka bot hit's the ball)
 D - spinbot XD
+T - decrese players speed
+G - increase players speed (used in calculating the hit point)
 # Py scripts
 main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
 util.py - this is where open cv gets input data as well where player is moved

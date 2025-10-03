@@ -60,19 +60,19 @@ class ball_class:
     range = 0
     ball_speed = 0
     prev_rad = []
-    prev_rad_size = 10
+    prev_rad_size = 100
     ball_rad = 0
     ball_direction = 0
     back_dir = False
+    init_dir = 2
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
         self.range = position_history -1
         self.last_positions = [position for n in range(position_history)]
-        self.reset_rad()
 
-    def reset_rad(self):
-        self.prev_rad = [0 for n in range(self.prev_rad_size)]
+    def reset_rad(self, rads):
+        self.prev_rad = [rads for n in range(self.prev_rad_size)]
 
     def update(self):
         self.last_positions.pop(0)
@@ -94,32 +94,41 @@ class ball_class:
         norm_rads_uncaped = ((rads - (math.pi / 2)) % math.pi) - (math.pi / 2)
         norm_rads = abs(norm_rads_uncaped)
         #Todo WHATEVER THE BATSHIT IS THIS
+        if self.init_dir > 0:
+            self.init_dir -= 1
+            if self.init_dir == 0:
+                self.reset_rad(norm_rads)
+            else:
+                return
         self.prev_rad.pop(0)
-        self.prev_rad.append(round(norm_rads,1))
+        self.prev_rad.append(norm_rads)
         # print(norm_rads)
         #filters data.. idk how just like 11.11pm rjn i'm tierd ;-;
-        sorted_arr = self.prev_rad
+        sorted_arr = self.prev_rad.copy()
         sorted_arr.sort()
         middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
+        # print(middle)
         avg = 0
         avg_num = 1
-        range = 1
+        range = 0.1
+        bad_data = True
         for x in sorted_arr:
-            if x < middle - range:
-                continue
-            elif x < middle + range:
+            if abs(x - middle) < range:
                 avg = (avg * (avg_num - 1) + x) / avg_num
                 avg_num += 1
-            else:
-                break
+                if x == norm_rads:
+                    bad_data = False
         #checks if the angle isn't valid
-        self.ball_rad = norm_rads
+        self.ball_rad = avg
         self.back_dir = norm_rads_uncaped < 0
-        self.ball_direction = math.floor((rads*2) / math.pi)/2
-        print(rads, norm_rads, self.ball_direction)
-        if norm_rads_uncaped < 0:
-            self.ball_direction = self.ball_direction+0.5
+        if not bad_data:
+            self.ball_direction = math.floor((rads*2) / math.pi)/2
             # print(rads, norm_rads, self.ball_direction)
+            if norm_rads_uncaped < 0:
+                self.ball_direction = self.ball_direction+0.5
+                # print(rads, norm_rads, self.ball_direction)
+        else:
+            print("Skiped", norm_rads, middle)
         # print(self.prev_rad)
         #1.596431735316574 1.545160918273219 -1.0707963267948966
         #1.596431735316574 = pi - 1.545160918273219

@@ -308,6 +308,11 @@ class llb_bot:
             lib_move.movement(False, False, False, True, False)
             time.sleep(1/240)
             lib_move.movement(False, False, False, False, True)
+            self.debounces["a"] = False
+        if keyboard.is_pressed("t"):
+            self.game.players[0].speed -= 2
+        if keyboard.is_pressed("g"):
+            self.game.players[0].speed += 2
 
         
         #final debug print :))
@@ -319,26 +324,35 @@ class llb_bot:
     #others aka 2nd in tree
 
     def calculate_next_pos(self, start_img):
-        x1 = self.game.players[0].position.x
-        x2 = self.game.ball.position.x
-        a = self.game.players[0].speed 
-        b = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
-        # print(b, x1 < x2)
-        delta_x = x2 - x1
-        a *= -1 if delta_x < 0 else 1
-        # Table or smthing
-        # b | pos | res
-        # - | - | +
-        # - | + | -
-        # + | - | +
-        # + | + | -
-        print(a, b, delta_x, x1, x2)
-        pos = -a * delta_x / (a - b)
-        # print(delta_x)
-        pos_global = pos + x2
-        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom)), (255,255,0), 2) 
-        # return 0
-        return -1 if x2 < x1 else 1
+        
+        
+        players_position = self.game.players[0].position.x
+        balls_position = self.game.ball.position.x
+        players_speed = self.game.players[0].speed 
+        players_speed *= -1 if balls_position < players_position else 1
+        balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+        pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
+        #displays players speed
+        cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+
+        #checks if out of bounds
+        # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
+        # return -1 if pos_global < players_position else 1
+        if self.game.stage.left > pos_global:
+            distance_till_wall = (balls_position - self.game.stage.left) / balls_speed
+
+            players_position = self.game.players[0].position.x + players_speed * distance_till_wall
+            balls_position = distance_till_wall
+            players_speed = self.game.players[0].speed 
+            balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+            pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
+            return -1 if pos_global < players_position else 1
+        elif self.game.stage.right < pos_global:
+
+            return -1 if pos_global < players_position else 1
+        else:
+            cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
+            return -1 if pos_global < players_position else 1
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):
@@ -412,3 +426,11 @@ class llb_bot:
     def color_find(self, hsv_img, mask_upper, mask_lower):
         masked_screenshot = cv.inRange(hsv_img, mask_upper, mask_lower)
         return cv.threshold(masked_screenshot,254,255,0)
+
+    #layer 3 of hell
+    def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
+        #whatever the fuck this is
+        delta_x = balls_position - players_position
+        pos = -players_speed * delta_x / (players_speed - balls_speed)
+        pos_global = pos + balls_position
+        return pos_global

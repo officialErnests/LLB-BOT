@@ -10,26 +10,26 @@ Leathal league blaze (from now on llb) bot using opencv :))
 ## Run
 1. Open LLB and make sure not to minimize it (it auto closes if you do that)
 2. Run main.py (with your prefered py complier or intrepreter [idk what they are called ://])
-3. If you want to bot to play then you have to choose raptor with this specific skin
+3. If you want to bot to play then you have to choose raptor (aka guy with red cap)
 ![Skin_in_question](https://hc-cdn.hel1.your-objectstorage.com/s/v3/6f2c3b605df2509f1a880bac5149201170b1ff1b_screenshot_2025-09-29_213005.png)
 4. As well it needs to be with keyboard inputs aka player 1
 5. Have fun
 
 # Instructions
 ## Keyboard
-Works even when not tabed in
-Q - quits
-5 - Compact mode
-6 - Vision enabled
-7 - Bot following
-8 - Bot hitting
-9 - Simple ai
-0 - Reset border
-\- - Funny
+Works even when not tabed in<br>
+Q - quits <br>
+5 - Compact mode<br>
+6 - Vision enabled<br>
+7 - Bot following<br>
+8 - Bot hitting<br>
+9 - Simple ai<br>
+0 - Reset border<br>
+'-' - Funny
 # Py scripts
-main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
-util.py - this is where open cv gets input data as well where player is moved
-Real_utils.py - My smart idea to create custom vector 2d class XD
+main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)<br>
+util.py - this is where open cv gets input data as well where player is moved<br>
+Real_utils.py - My smart idea to create custom vector 2d class XD<br>
 LLBlazze.py - holds all classes for game like ball and others as well do calculation on what to do (moves player and calculates ball bounces)
 
 # How does it work?

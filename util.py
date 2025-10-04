@@ -38,6 +38,7 @@ class llb_bot:
     #higger fps set like 0.2 or 0.1
     #else leave it at 0
     jump_delay = 0.2
+    global_timer = 0
     detailed_debuger = False
     hit_enabled = False
     inputs = {
@@ -66,8 +67,9 @@ class llb_bot:
     windowName = None
     window = None
     def __init__(self, windowName):
+        self.windowName = windowName
         if len(pygetwindow.getWindowsWithTitle(windowName)):
-            self.window = win32gui.FindWindow("windowName", None)
+            self.window = win32gui.FindWindow(None, windowName)
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
     
@@ -78,11 +80,59 @@ class llb_bot:
         cv.namedWindow("NOT SO LETHAL BLAZE", cv.WINDOW_NORMAL)
         cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
         cv.destroyWindow("NOT SO LETHAL BLAZE")
+        prev_time = 0
         while self.main_loop:
             #initilises
+            self.global_timer += time.time() - prev_time
             prev_time = time.time()
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
+            if not self.window:
+                lib_move.movement(False,False,False,False,False)
+                self.compact_mode = True
+                self.vision_enabled = False
+                self.bot_enabled = False
+                self.bot_hit_enabled = True
+                self.simple_ai = False
+                x,y = int(math.sin(self.global_timer)*120+20),50
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                x,y = int(math.sin(self.global_timer+0.5)*120+20),200
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                x,y = int(math.sin(self.global_timer+1)*120+20),350
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                x,y = int(math.sin(self.global_timer+1.5)*120+20),500
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                x,y = int(math.sin(self.global_timer+2)*120+20),650
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                x,y = int(math.sin(self.global_timer+2.5)*120+20),800
+                cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+                cv.imshow('NSLB',logo)
+                cv.waitKey(1)
+                time.sleep(0.1)
+                self.handle_inputs()
+                if self.window_open:
+                    self.window_open = False
+                    cv.destroyWindow('NOT SO LETHAL BLAZE')
+                if len(pygetwindow.getWindowsWithTitle(self.windowName)):
+                    self.window = win32gui.FindWindow(None, self.windowName)
+                    self.windows = pygetwindow.getWindowsWithTitle(self.windowName)[0]
+                    self.window_set = True
+                continue
+
+
             if win32gui.GetWindowPlacement(self.window)[1] == win32con.SW_SHOWMINIMIZED:
+                #resets inputs so it dosn't do weird shit
+                lib_move.movement(False,False,False,False,False)
+                self.compact_mode = True
+                self.vision_enabled = False
+                self.bot_enabled = False
+                self.bot_hit_enabled = True
+                self.simple_ai = False
                 self.prev_fps.pop(0)
                 self.prev_fps.append(1/(time.time() - self.prev_time))
                 sum = 0
@@ -122,8 +172,12 @@ class llb_bot:
                 cv.putText(logo, "MINIMIZED", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "MINIMIZED", (x,y), 1, 10,        (0,0,255), 15)
 
+                if self.window_open:
+                    self.window_open = False
+                    cv.destroyWindow('NOT SO LETHAL BLAZE')
                 cv.imshow('NSLB',logo)
                 cv.waitKey(1)
+                time.sleep(0.1)
                 self.handle_inputs()
                 continue
 

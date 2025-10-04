@@ -67,7 +67,6 @@ class nbArray():
         extra_parameters = value_point is not None
 
         sorted_arr = self.get_sorted_array()
-        print(sorted_arr)
         middle = sorted_arr[int(math.floor(self.lenght() / 2.0))]
         avg = 0
         avg_num = 1
@@ -92,7 +91,6 @@ class nbArray():
         sorted_arr = self.array.copy()
         sorted_arr.sort()
         self.__sortedarr = sorted_arr
-        print(sorted_arr)
     def append(self, value, /):
         self.__updated()
         self.array.append(value)

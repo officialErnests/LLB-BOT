@@ -98,7 +98,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #bot
-            self.bot_movement(start_img, prev_time, debugTimer)
+            self.bot_movement(start_img, prev_time, debugTimer, time.time() - self.prev_time)
 
             #Displays if hit is enabled 
             if self.hit_enabled:
@@ -161,7 +161,7 @@ class llb_bot:
             debugTimer = time.time()
         return start_img, img_hsv_value
 
-    def bot_movement(self, start_img, prev_time, debugTimer):
+    def bot_movement(self, start_img, prev_time, debugTimer, delta):
         inputs = {
             "Hit" : False,
             "Jump" : False,
@@ -195,7 +195,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #handles walking
-            self.inputs["walk_direction"], switch = self.calculate_next_pos(start_img)
+            self.inputs["walk_direction"], switch = self.calculate_next_pos(start_img, delta)
             match self.inputs["walk_direction"]:
                 case -1:
                     inputs["Left"] = True
@@ -324,22 +324,23 @@ class llb_bot:
     
     #others aka 2nd in tree
 
-    def calculate_next_pos(self, start_img):
-        
-        
+    def calculate_next_pos(self, start_img, delta):
+        # print(self.game.players[0].speed, self.game.ball.ball_speed)
+
         players_position = self.game.players[0].position.x
         balls_position = self.game.ball.position.x
         players_speed = self.game.players[0].speed 
         players_speed *= -1 if balls_position < players_position else 1
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+        if balls_speed == 0: balls_speed = 1
         pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
         #checks if out of bounds
         # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         # return -1 if pos_global < players_position else 1
-        print(self.game.ball.ball_speed, self.game.players[0].speed)
+        # print(self.game.ball.ball_speed, self.game.players[0].speed)
         if self.game.stage.left > pos_global:
             #gets distance till wall so player can be moved
-            distance_till_wall = (self.game.stage.left - balls_position) / balls_speed
+            distance_till_wall = abs(self.game.stage.left - balls_position) / abs(balls_speed)
 
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.left
@@ -347,7 +348,7 @@ class llb_bot:
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
         elif self.game.stage.right < pos_global:
             #gets distance till wall so player can be moved
-            distance_till_wall = (self.game.stage.right - balls_position) / balls_speed
+            distance_till_wall = abs(self.game.stage.right - balls_position) / abs(balls_speed)
 
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.right
@@ -358,27 +359,12 @@ class llb_bot:
         cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
 
-        #adjusts players speed
-        self.game.players[0].expected_speed.pop(0)
-        self.game.players[0].expected_speed.append(self.game.players[0].next_pos - players_position)
-        self.game.players[0].next_pos = players_position + players_speed
+        # if abs(players_position - pos_global) > 100:
+        # else:
+        #     print("2 close")
 
-
-        sorted_arr = self.prev_rad.copy()
-        sorted_arr.sort()
-        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
-        avg = 0
-        avg_num = 1
-        range = 0.1
-        bad_data = True
-        for x in sorted_arr:
-            if abs(x - middle) < range:
-                avg = (avg * (avg_num - 1) + x) / avg_num
-                avg_num += 1
-                if x == norm_rads:
-                    bad_data = False
-        self.game.players[0].speed = 
-        direction = -1 if pos_global < players_position else 1
+        # direction = 0
+        direction = -1 if pos_global < self.game.players[0].position.x else 1
         switch = self.game.players[0].prev_direction != direction
         self.game.players[0].prev_direction = direction
         return direction, switch
@@ -460,6 +446,8 @@ class llb_bot:
     def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
         #whatever the fuck this is
         delta_x = balls_position - players_position
+        if (players_speed - balls_speed) == 0:
+            return 0
         pos = -players_speed * delta_x / (players_speed - balls_speed)
         pos_global = pos + balls_position
         return pos_global

@@ -65,26 +65,23 @@ class ball_class:
     back_dir = False
     init_dir = 2
     last_positions = vector2D(0,0)
-    prew_speed = []
+    prew_speed : nbArray = None
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
         self.range = position_history
-        self.prew_speed = [0 for n in range(position_history)]
+        self.prew_speed = nbArray([0 for n in range(position_history)])
 
     def reset_rad(self, rads):
         self.previous_radiants = nbArray([rads for n in range(self.prev_rad_size)])
 
     def update(self, delta):
         self.prew_speed.pop(0)
-        self.prew_speed.append(self.position.distance_to(self.last_positions) / delta)
+        self.prew_speed.append(self.position.distance_to(self.last_positions) * delta * 10)
 
         #Get's the ball speed
-        temp_speed = 0
-        for pos in self.prew_speed:
-            temp_speed += (pos / self.range)
-        
-        self.ball_speed = self.ball_speed * 0.5 + temp_speed * 0.5
+        self.ball_speed = self.prew_speed.denoised_array(0.1)
+        # print(self.ball_speed)
         # print(self.ball_speed)
 
         #Get balls radiant
@@ -102,7 +99,7 @@ class ball_class:
         
         self.previous_radiants.pop(0)
         self.previous_radiants.append(norm_rads)
-        avg, if_outliner = self.previous_radiants.denoised_array(0.1, norm_rads)
+        avg, if_outliner = self.previous_radiants.denoised_array(0.1, value_point = norm_rads)
         self.ball_rad = avg
         self.back_dir = norm_rads_uncaped < 0
         if not if_outliner:
@@ -156,12 +153,19 @@ class player_class:
     charecter = None
     speed = 0
     prev_direction = 0
-    next_pos = 0
-    expected_speed = []
+    prev_pos = 0
+    expected_speed : nbArray = None
     def __init__(self, position, character):
         self.position = position
         self.character = character
-        self.expected_speed = [0 for n in range(10)]
+        self.expected_speed = nbArray([0 for n in range(100)])
+    def update(self, delta):
+        #adjusts players speed
+        self.expected_speed.pop(0)
+        self.expected_speed.append(abs(self.position.x - self.prev_pos) * delta * 10)
+        avg = self.expected_speed.denoised_array(0.2)
+        self.prev_pos = self.position.x
+        self.speed = avg
 
 class gamedata:
     stage : stage_class = None
@@ -172,7 +176,7 @@ class gamedata:
     prev_hits = []
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos, [], 4)
+        self.ball = ball_class(ball_pos, [], 100)
         self.players.append(player_class(vector2D(0,0), "RAPTOR"))
         # TODO
         # for player in players:
@@ -196,7 +200,7 @@ class gamedata:
             return return_inputs
         elif len(self.prev_hits) > 0:
             self.prev_hits = []
-
+        self.players[0].update(delta)
         self.ball.update(delta)
         if not self.game_start:
             self.game_start = True

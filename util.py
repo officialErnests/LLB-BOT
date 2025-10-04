@@ -6,6 +6,8 @@ import pygetwindow
 from LLBlaze import *
 from Real_utils import *
 import keyboard
+import win32gui
+import win32con
 
 #importing c or some shit like that
 from ctypes import cdll
@@ -60,9 +62,12 @@ class llb_bot:
     main_loop = True
     prev_time = 0
     prev_fps = [0 for n in range(5)]
+    last_direction = False
+    windowName = None
+    window = None
     def __init__(self, windowName):
-        start_time = time.time()
         if len(pygetwindow.getWindowsWithTitle(windowName)):
+            self.window = win32gui.FindWindow("windowName", None)
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
     
@@ -77,6 +82,50 @@ class llb_bot:
             #initilises
             prev_time = time.time()
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
+            if win32gui.GetWindowPlacement(self.window)[1] == win32con.SW_SHOWMINIMIZED:
+                self.prev_fps.pop(0)
+                self.prev_fps.append(1/(time.time() - self.prev_time))
+                sum = 0
+                for x in self.prev_fps:
+                    sum += x / len(self.prev_fps)
+                x,y = 10,780
+                cv.putText(logo, "FPS:" + str(round(sum,2)), (x+5,y+5), 1, 3,    (255,255,255), 15)
+                cv.putText(logo, "FPS:" + str(round(sum,2)), (x,y), 1, 3,        (0,0,0), 5)
+                self.prev_time = time.time()
+                #display
+                x,y = 10,100
+                cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+3,y+3), 1, 4,       (255,255,0) if self.compact_mode else (255,255,255), 15)
+                cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4,           (255,255,255) if self.compact_mode else (0,0,0), 5)
+                x,y = 10,200
+                cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x+5,y+5), 1, 4,   (255,255,0) if self.vision_enabled else (255,255,255), 15)
+                cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x,y), 1, 4,       (255,255,255) if self.vision_enabled else (0,0,0), 5)
+                x,y = 10,300
+                cv.putText(logo, "[7] Bot following: " + ("V" if self.bot_enabled else "X"), (x+5,y+5), 1, 4,  (255,255,0) if self.bot_enabled else (255,255,255), 15)
+                cv.putText(logo, "[7] Bot following: " + ("V" if self.bot_enabled else "X"), (x,y), 1, 4,      (255,255,255) if self.bot_enabled else (0,0,0), 5)
+                x,y = 10,400
+                cv.putText(logo, "[8] Bot hitting: " + ("V" if self.bot_hit_enabled else "X"), (x+5,y+5), 1, 4, (255,255,0) if self.bot_hit_enabled else (255,255,255), 15)
+                cv.putText(logo, "[8] Bot hitting: " + ("V" if self.bot_hit_enabled else "X"), (x,y), 1, 4,     (255,255,255) if self.bot_hit_enabled else (0,0,0), 5)
+                x,y = 10,500
+                cv.putText(logo, "[9] Simple ai: " + ("V" if self.simple_ai else "X"), (x+5,y+5), 1, 4,    (255,255,0) if self.simple_ai else (255,255,255), 15)
+                cv.putText(logo, "[9] Simple ai: " + ("V" if self.simple_ai else "X"), (x,y), 1, 4,        (255,255,255) if self.simple_ai else (0,0,0), 5)
+                x,y = 10,600
+                cv.putText(logo, "[0] - Reset border", (x+5,y+5), 1, 4,    (255,255,255), 15)
+                cv.putText(logo, "[0] - Reset border", (x,y), 1, 4,        (0,0,0), 5)
+                x,y = 10,700
+                cv.putText(logo, "[-] - Funny", (x+5,y+5), 1, 4,    (255,255,255), 15)
+                cv.putText(logo, "[-] - Funny", (x,y), 1, 4,        (0,0,0), 5)
+                x,y = 430,770
+                cv.putText(logo, "QUIT - [Q]", (x+5,y+5), 1, 4,    (255,255,255), 15)
+                cv.putText(logo, "QUIT - [Q]", (x,y), 1, 4,        (0,0,255), 5)
+
+                x,y = 10,780
+                cv.putText(logo, "MINIMIZED", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "MINIMIZED", (x,y), 1, 10,        (0,0,255), 15)
+
+                cv.imshow('NSLB',logo)
+                cv.waitKey(1)
+                self.handle_inputs()
+                continue
 
             #Gets image
             start_img, img_hsv_value = self.get_image()
@@ -259,54 +308,83 @@ class llb_bot:
 
             if self.detailed_debuger: debugTimer_bot = time.time()
             # cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            if self.simple_ai:
+                switcher = False
+                if self.last_direction != self.game.players[0].position.x > self.game.ball.position.x:
+                    self.last_direction = self.game.players[0].position.x > self.game.ball.position.x
+                    switcher = True
+                
+                inputs["Jump"] = self.game.players[0].position.y > self.game.ball.position.y
+                if self.inputs["jump_timer"] <= 0:
+                    self.inputs["jump_timer"] = self.jump_delay
+                    inputs["Jump"] = False
+                elif self.inputs["jump"]:
+                    self.inputs["jump_timer"] -= time.time() - prev_time
 
-            #predicts movement and hit and all that jazzzzzzzzzez :DD
-            self.inputs["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+                self.inputs["Hit"] = self.game.players[0].position.distance_to(self.game.ball.position) <  200
+                if self.inputs["Hit_timer"] > 0:
+                    self.inputs["Hit_timer"] -= time.time() - prev_time
+                elif self.inputs["Hit"] and self.bot_hit_enabled:
+                    self.inputs["Hit_timer"] = 0.1
+                    inputs["Hit"] = True
+                if self.detailed_debuger:
+                    print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
+                print(self.game.players[0].position.x > self.game.ball.position.x, self.game.players[0].position.x < self.game.ball.position.x)
+                lib_move.movement(self.inputs["Hit"],
+                                  inputs["Jump"],
+                                  self.game.players[0].position.x > self.game.ball.position.x, 
+                                  self.game.players[0].position.x < self.game.ball.position.x,
+                                  switcher)
+            else:
+                #predicts movement and hit and all that jazzzzzzzzzez :DD
+                self.inputs["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+                
+
+                #handles jump
+                inputs["Jump"] = jump
+                if self.inputs["jump_timer"] <= 0:
+                    self.inputs["jump_timer"] = self.jump_delay
+                    inputs["Jump"] = False
+                elif self.inputs["jump"]:
+                    self.inputs["jump_timer"] -= time.time() - prev_time
+                    # DEBUG
+                    # inputs["Jump"] = True
+                if self.detailed_debuger:
+                    print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
+
+                #handles walking
+                match self.inputs["walk_direction"]:
+                    case -1:
+                        inputs["Left"] = True
+                    case 0:
+                        #if both disabled ;)
+                        pass
+                    case 1:
+                        inputs["Right"] = True
+                    case _:
+                        #if both passed ;)
+                        pass
+                if self.detailed_debuger:
+                    print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
+
+                #handles hitting
+                self.inputs["Hit"] = hit
+                if self.inputs["Hit_timer"] > 0:
+                    self.inputs["Hit_timer"] -= time.time() - prev_time
+                elif self.inputs["Hit"] and self.bot_hit_enabled:
+                    self.inputs["Hit_timer"] = 0.1
+                    inputs["Hit"] = True
+                if self.detailed_debuger:
+                    print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
+                    debugTimer = time.time()
 
 
-            #handles jump
-            inputs["Jump"] = jump
-            if self.inputs["jump_timer"] <= 0:
-                self.inputs["jump_timer"] = self.jump_delay
-                inputs["Jump"] = False
-            elif self.inputs["jump"]:
-                self.inputs["jump_timer"] -= time.time() - prev_time
-                # DEBUG
-                # inputs["Jump"] = True
-            if self.detailed_debuger:
-                print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
-                debugTimer = time.time()
-
-            #handles walking
-            match self.inputs["walk_direction"]:
-                case -1:
-                    inputs["Left"] = True
-                case 0:
-                    #if both disabled ;)
-                    pass
-                case 1:
-                    inputs["Right"] = True
-                case _:
-                    #if both passed ;)
-                    pass
-            if self.detailed_debuger:
-                print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
-                debugTimer = time.time()
-
-            #handles hitting
-            self.inputs["Hit"] = hit
-            if self.inputs["Hit_timer"] > 0:
-                self.inputs["Hit_timer"] -= time.time() - prev_time
-            elif self.inputs["Hit"] and self.bot_hit_enabled:
-                self.inputs["Hit_timer"] = 0.1
-                inputs["Hit"] = True
-            if self.detailed_debuger:
-                print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
-                debugTimer = time.time()
-
-
-            #sends input to c
-            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
+                #sends input to c
+                lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
+        
         # else:
         #     cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
         if self.detailed_debuger:
@@ -339,6 +417,8 @@ class llb_bot:
             if not self.debounces["7"]:
                 self.debounces["7"] = True
                 self.bot_enabled = not self.bot_enabled
+                if not self.bot_enabled:
+                    lib_move.movement(False,False,False,False,False)
         else:
             self.debounces["7"] = False
 
@@ -452,7 +532,7 @@ class llb_bot:
                     detected += 1
         self.game.hit_amount = detected
         if detected > 2:
-            self.game.ball.init_dir = 5
+            self.game.ball.init_dir = 1
 
     def detect_player(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
@@ -498,9 +578,9 @@ class llb_bot:
         if movement['m00'] > 0:
             cX = int(movement["m10"] / movement["m00"])
             cY = int(movement["m01"] / movement["m00"])
-            # cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
-            # cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
-            # cv.circle(start_img, (cX, cY), 5, color, -1)
+            cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
+            cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
+            cv.circle(start_img, (cX, cY), 5, color, -1)
             # cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cY), (50,50), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
             self.game.ball.state = ball_stage
             self.game.ball.position = vector2D(cX, cY)

@@ -95,6 +95,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 4. https://learn.microsoft.com/en-us/cpp/build/walkthrough-creating-and-using-a-dynamic-link-library-cpp?view=msvc-170
 5. https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 6. https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-keybdinput
+7. https://learncplusplus.org/how-to-use-a-game-pad-or-joystick-controller-in-c-on-windows/0
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

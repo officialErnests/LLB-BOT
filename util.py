@@ -370,7 +370,7 @@ class llb_bot:
         #     print("2 close")
 
         # direction = 0
-        direction = -1 if pos_global < self.game.players[0].position.x else 1
+        direction = -1 if  self.game.ball.position.x < self.game.players[0].position.x else 1
         switch = self.game.players[0].prev_direction != direction
         self.game.players[0].prev_direction = direction
         return direction, switch

@@ -30,6 +30,8 @@ class llb_bot:
     bot_enabled = False
     bot_hit_enabled = True
     simple_ai = False
+
+    window_open = False
     #adjust based on fps your getting
     #higger fps set like 0.2 or 0.1
     #else leave it at 0
@@ -68,10 +70,39 @@ class llb_bot:
 
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
         cv.resizeWindow("NSLB", 400, 400)
+        cv.namedWindow("NOT SO LETHAL BLAZE", cv.WINDOW_NORMAL)
+        cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
+        cv.destroyWindow("NOT SO LETHAL BLAZE")
         while self.main_loop:
-            debugTimer = time.time()
+            #initilises
+            prev_time = time.time()
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
+            #Gets image
+            start_img, img_hsv_value = self.get_image()
+
+            #Detection
+            if self.vision_enabled:
+                self.detect_player(start_img, img_hsv_value)
+                self.detect_hit(start_img, img_hsv_value)
+                self.detect_ball(start_img, img_hsv_value)
+
+                #updates game
+                self.game.update(start_img, time.time() - self.prev_time)
+            
+            #Bot movement
+            self.bot_movement(start_img, prev_time, time.time() - self.prev_time)
+            
+            #fps
+            self.prev_fps.pop(0)
+            self.prev_fps.append(1/(time.time() - self.prev_time))
+            sum = 0
+            for x in self.prev_fps:
+                sum += x / len(self.prev_fps)
+            x,y = 10,780
+            cv.putText(logo, "FPS:" + str(round(sum,2)), (x+5,y+5), 1, 3,    (255,255,255), 15)
+            cv.putText(logo, "FPS:" + str(round(sum,2)), (x,y), 1, 3,        (0,0,0), 5)
+            self.prev_time = time.time()
             #display
             x,y = 10,100
             cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+3,y+3), 1, 4,       (255,255,0) if self.compact_mode else (255,255,255), 15)
@@ -100,10 +131,16 @@ class llb_bot:
 
             #Display            
             cv.imshow('NSLB',logo)
+            if not self.compact_mode:
+                cv.imshow('NOT SO LETHAL BLAZE',start_img)
+                self.window_open = True
+            elif self.window_open:
+                self.window_open = False
+                cv.destroyWindow('NOT SO LETHAL BLAZE')
             cv.waitKey(1)
 
             #inputs
-            self.handle_inputs(debugTimer)
+            self.handle_inputs()
 
 
     #main function
@@ -211,7 +248,7 @@ class llb_bot:
             debugTimer = time.time()
         return start_img, img_hsv_value
 
-    def bot_movement(self, start_img, prev_time, debugTimer, delta):
+    def bot_movement(self, start_img, prev_time, delta):
         inputs = {
             "Hit" : False,
             "Jump" : False,
@@ -221,7 +258,7 @@ class llb_bot:
         if self.bot_enabled:
 
             if self.detailed_debuger: debugTimer_bot = time.time()
-            cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            # cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
 
             #predicts movement and hit and all that jazzzzzzzzzez :DD
             self.inputs["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
@@ -260,7 +297,7 @@ class llb_bot:
             self.inputs["Hit"] = hit
             if self.inputs["Hit_timer"] > 0:
                 self.inputs["Hit_timer"] -= time.time() - prev_time
-            elif self.inputs["Hit"] and self.hit_enabled:
+            elif self.inputs["Hit"] and self.bot_hit_enabled:
                 self.inputs["Hit_timer"] = 0.1
                 inputs["Hit"] = True
             if self.detailed_debuger:
@@ -270,13 +307,13 @@ class llb_bot:
 
             #sends input to c
             lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
-        else:
-            cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+        # else:
+        #     cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
         if self.detailed_debuger:
             print("Bot processed:" + str(round(time.time() - debugTimer,3)))
             debugTimer = time.time()
 
-    def handle_inputs(self, debugTimer):
+    def handle_inputs(self):
         #News 
         if  keyboard.is_pressed("q"):
             cv.destroyAllWindows()
@@ -284,42 +321,42 @@ class llb_bot:
             self.main_loop = False
             return
         
-        if keyboard.is_pressed("5"):
+        if keyboard.is_pressed("num 5"):
             if not self.debounces["5"]:
                 self.debounces["5"] = True
                 self.compact_mode = not self.compact_mode
         else:
             self.debounces["5"] = False
 
-        if keyboard.is_pressed("6"):
+        if keyboard.is_pressed("num 6")  and not keyboard.is_pressed("right"):
             if not self.debounces["6"]:
                 self.debounces["6"] = True
                 self.vision_enabled = not self.vision_enabled
         else:
             self.debounces["6"] = False
 
-        if keyboard.is_pressed("7"):
+        if keyboard.is_pressed("num 7") and not keyboard.is_pressed("home"):
             if not self.debounces["7"]:
                 self.debounces["7"] = True
                 self.bot_enabled = not self.bot_enabled
         else:
             self.debounces["7"] = False
 
-        if keyboard.is_pressed("8"):
+        if keyboard.is_pressed("num 8") and not keyboard.is_pressed("up"):
             if not self.debounces["8"]:
                 self.debounces["8"] = True
                 self.bot_hit_enabled = not self.bot_hit_enabled
         else:
             self.debounces["8"] = False
 
-        if keyboard.is_pressed("9"):
+        if keyboard.is_pressed("num 9") and not keyboard.is_pressed("page up"):
             if not self.debounces["9"]:
                 self.debounces["9"] = True
                 self.simple_ai = not self.simple_ai
         else:
             self.debounces["9"] = False
             
-        if keyboard.is_pressed("0"):
+        if keyboard.is_pressed("num 0") and not keyboard.is_pressed("insert"):
             if not self.debounces["0"]:
                 self.debounces["0"] = True
                 self.game.game_start = False
@@ -384,7 +421,7 @@ class llb_bot:
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
         # print(distance_till_wall)
         #displays players speed and prediction
-        cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
+        # cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         self.game.ball.prediction_x = pos_global
         # if abs(players_position - pos_global) > 100:
@@ -445,13 +482,13 @@ class llb_bot:
                                 np.array([5, 230, 255]))
         match self.game.ball.state:
             case 1:
-                cv.putText(start_img, "Blue ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
+                # cv.putText(start_img, "Blue ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
                 pass
             case 2:
-                cv.putText(start_img, "Red ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+                # cv.putText(start_img, "Red ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
                 pass
             case _:
-                cv.putText(start_img, "No ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
+                # cv.putText(start_img, "No ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
                 pass
 
     def get_color(self, start_img, hsv_img, ball_stage, mask_upper, mask_lower):
@@ -461,10 +498,10 @@ class llb_bot:
         if movement['m00'] > 0:
             cX = int(movement["m10"] / movement["m00"])
             cY = int(movement["m01"] / movement["m00"])
-            cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
-            cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
-            cv.circle(start_img, (cX, cY), 5, color, -1)
-            cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cY), (50,50), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+            # cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
+            # cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
+            # cv.circle(start_img, (cX, cY), 5, color, -1)
+            # cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cY), (50,50), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
             self.game.ball.state = ball_stage
             self.game.ball.position = vector2D(cX, cY)
     

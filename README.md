@@ -19,13 +19,13 @@ Leathal league blaze (from now on llb) bot using opencv :))
 ## Keyboard
 Works even when not tabed in
 Q - quits
-5 - Compact mode
+5 - Compact mode 
 6 - Vision enabled
 7 - Bot following
 8 - Bot hitting
 9 - Simple ai
 0 - Reset border
-\- - Funny
+"-" - Funny
 # Py scripts
 main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
 util.py - this is where open cv gets input data as well where player is moved
@@ -88,6 +88,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 22. https://stackoverflow.com/questions/38364162/in-python-how-do-you-denote-required-parameters-and-optional-parameters-in-code
 23. https://stackoverflow.com/questions/59661042/what-do-single-star-and-slash-do-as-independent-parameters
 24. https://www.geeksforgeeks.org/python/python-opencv-resizewindow-function/
+25. https://github.com/boppreh/keyboard?tab=readme-ov-file#keyboard.KeyboardEvent
 ## C
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes

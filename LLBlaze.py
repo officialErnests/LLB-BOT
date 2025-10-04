@@ -67,6 +67,7 @@ class ball_class:
     last_positions = vector2D(0,0)
     prew_speed : nbArray = None
     prediction_x = 0
+    prediction_y = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -143,6 +144,7 @@ class ball_class:
                 # print(len, )
                 # result2 = (result + direction * vector2D(-1,-1) * len2 )
                 result2 = (result + direction * vector2D(-1,-1) * len2)
+                self.prediction_y = result2.y
                 cv.line(image, (int(self.prediction_x + 100), int(result2.y + 100)),
                                 (int(self.prediction_x - 100), int(result2.y - 100)),
                                 (255,255,0), 2) 
@@ -210,13 +212,6 @@ class gamedata:
             self.stage.draw(image)
             # self.ball.draw(image)
             self.ball.prediction(image, self.stage, 10)
-            return_inputs = {
-                "walk_direction" : 0,
-                "jump" : False,
-                "Hit" : False,
-                "Hit_dist" : -1,
-            }
-            return return_inputs
         elif len(self.prev_hits) > 0:
             self.prev_hits = []
         self.players[0].update(delta)
@@ -232,10 +227,3 @@ class gamedata:
 
         self.ball.prediction(image, self.stage, 20)
         
-        #sends player input
-        return_inputs = {
-            "jump" : self.players[0].position.y > self.ball.position.y,
-            "Hit" : self.players[0].position.distance_to(self.ball.position) < 200,
-            "Hit_dist" : self.players[0].position.distance_to(self.ball.position),
-        }
-        return return_inputs

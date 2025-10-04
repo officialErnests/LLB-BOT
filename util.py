@@ -87,12 +87,7 @@ class llb_bot:
                 debugTimer = time.time()
             
             #update game
-            return_inputs = self.game.update(start_img, time.time() - self.prev_time)
-            self.inputs["jump"] = return_inputs["jump"]
-            self.inputs["Hit"] = return_inputs["Hit"]
-            if 0 in self.game.players:
-                cv.putText(start_img, str(round(return_inputs["Hit_dist"],2)), (self.game.players[0].position.x + 25,self.game.players[0].position.y - 25), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-
+            self.game.update(start_img, time.time() - self.prev_time)
             if self.detailed_debuger:
                 print("Game updated:" + str(round(time.time() - debugTimer,3)))
                 debugTimer = time.time()
@@ -170,20 +165,16 @@ class llb_bot:
             "Right" : False
         }
         if self.bot_enabled:
+
             if self.detailed_debuger: debugTimer_bot = time.time()
-            
             cv.putText(start_img, "[w] Bot enabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
-            #handles hitting
-            if self.inputs["Hit_timer"] > 0:
-                self.inputs["Hit_timer"] -= time.time() - prev_time
-            elif self.inputs["Hit"] and self.hit_enabled:
-                self.inputs["Hit_timer"] = 0.1
-                inputs["Hit"] = True
-            if self.detailed_debuger:
-                print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
-                debugTimer = time.time()
+
+            #predicts movement and hit and all that jazzzzzzzzzez :DD
+            self.inputs["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+
 
             #handles jump
+            inputs["Jump"] = jump
             if self.inputs["jump_timer"] <= 0:
                 self.inputs["jump_timer"] = self.jump_delay
                 inputs["Jump"] = False
@@ -196,7 +187,6 @@ class llb_bot:
                 debugTimer = time.time()
 
             #handles walking
-            self.inputs["walk_direction"], switch = self.calculate_next_pos(start_img, delta)
             match self.inputs["walk_direction"]:
                 case -1:
                     inputs["Left"] = True
@@ -211,6 +201,18 @@ class llb_bot:
             if self.detailed_debuger:
                 print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
                 debugTimer = time.time()
+
+            #handles hitting
+            self.inputs["Hit"] = hit
+            if self.inputs["Hit_timer"] > 0:
+                self.inputs["Hit_timer"] -= time.time() - prev_time
+            elif self.inputs["Hit"] and self.hit_enabled:
+                self.inputs["Hit_timer"] = 0.1
+                inputs["Hit"] = True
+            if self.detailed_debuger:
+                print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
+                debugTimer = time.time()
+
 
             #sends input to c
             lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
@@ -374,7 +376,9 @@ class llb_bot:
         direction = -1 if  self.game.ball.position.x < self.game.players[0].position.x else 1
         switch = self.game.players[0].prev_direction != direction
         self.game.players[0].prev_direction = direction
-        return direction, switch
+        hit = abs(self.game.players[0].position.x - pos_global) < 100
+        jump = self.game.players[0].position.y > self.game.ball.prediction_y
+        return direction, switch, hit, jump
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):
@@ -452,9 +456,9 @@ class llb_bot:
     #layer 3 of hell
     def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
         #whatever the fuck this is
-        delta_x = balls_position - players_position
+        delta_x = players_position - balls_position
         if (players_speed - balls_speed) == 0:
             return 0
         pos = -players_speed * delta_x / (players_speed - balls_speed)
-        pos_global = pos + balls_position
+        pos_global = pos + players_position
         return pos_global

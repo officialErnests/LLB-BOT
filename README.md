@@ -85,6 +85,8 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 19. https://www.statisticshowto.com/probability-and-statistics/z-score/
 20. https://www.statisticshowto.com/probability-and-statistics/statistics-definitions/mean-median-mode/
 21. https://www.geeksforgeeks.org/python/python-opencv-cv2-line-method/
+22. https://stackoverflow.com/questions/38364162/in-python-how-do-you-denote-required-parameters-and-optional-parameters-in-code
+23. https://stackoverflow.com/questions/59661042/what-do-single-star-and-slash-do-as-independent-parameters
 ## C
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes

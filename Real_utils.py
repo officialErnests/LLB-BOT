@@ -2,7 +2,7 @@ import math
 class vector2D():
     x = 0
     y = 0
-    def __init__(self, x, y):
+    def __init__(self, x, y, /):
         self.x = x
         self.y = y
     def __str__(self):
@@ -56,3 +56,59 @@ class vector2D():
     def vector_from_rad(self, rad):
         self.x = math.sin(rad)
         self.y = math.cos(rad)
+
+class nbArray():
+    array = []
+    __sortedarr = []
+    __sorted = False
+    def __init__(self, array, /):
+        self.array = array.copy()
+    def denoised_array(self, *, value_point = None):
+        returns_value = value_point is not None
+
+        sorted_arr = self.get_sorted_array()
+        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
+        avg = 0
+        avg_num = 1
+        range = 0.1
+        bad_data = True
+        for x in sorted_arr:
+            if abs(x - middle) < range:
+                avg = (avg * (avg_num - 1) + x) / avg_num
+                avg_num += 1
+                if returns_value and x == value_point:
+                    bad_data = False
+        if returns_value:
+            return bad_data
+    
+    def get_sorted_array(self):
+        if not self.__sorted: self.arraySort()
+        return self.__sortedarr
+            
+    def arraySort(self):
+        self.__sorted = True
+        sorted_arr = self.array.copy()
+        sorted_arr.sort()
+        self.sorted = sorted_arr
+    def append(self, value):
+        self.__updated()
+        self.array.append(value)
+    def pop(self, pos):
+        self.__updated()
+        return self.array.pop(pos)
+    def avg(self):
+        total = 0
+        lenght = self.lenght()
+        for x in self.array:
+            total += x / lenght
+        return total
+    def lenght(self):
+        return len(self.array)
+
+    def __updated(self):
+        self.__sorted = False
+        
+    def __str__(self):
+        return str(self.array)
+    def __repr__(self):
+        return self.array

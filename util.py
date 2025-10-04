@@ -195,7 +195,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #handles walking
-            self.inputs["walk_direction"] = self.calculate_next_pos(start_img)
+            self.inputs["walk_direction"], switch = self.calculate_next_pos(start_img)
             match self.inputs["walk_direction"]:
                 case -1:
                     inputs["Left"] = True
@@ -212,7 +212,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #sends input to c
-            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], False)
+            lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
         else:
             cv.putText(start_img, "[w] Bot disabled", (400,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
         if self.detailed_debuger:
@@ -336,9 +336,10 @@ class llb_bot:
         #checks if out of bounds
         # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         # return -1 if pos_global < players_position else 1
+        print(self.game.ball.ball_speed, self.game.players[0].speed)
         if self.game.stage.left > pos_global:
             #gets distance till wall so player can be moved
-            distance_till_wall = (balls_position - self.game.stage.left) / balls_speed
+            distance_till_wall = (self.game.stage.left - balls_position) / balls_speed
 
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.left
@@ -356,8 +357,31 @@ class llb_bot:
         #displays players speed and prediction
         cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
-        # return 0
-        return -1 if pos_global < players_position else 1
+
+        #adjusts players speed
+        self.game.players[0].expected_speed.pop(0)
+        self.game.players[0].expected_speed.append(self.game.players[0].next_pos - players_position)
+        self.game.players[0].next_pos = players_position + players_speed
+
+
+        sorted_arr = self.prev_rad.copy()
+        sorted_arr.sort()
+        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
+        avg = 0
+        avg_num = 1
+        range = 0.1
+        bad_data = True
+        for x in sorted_arr:
+            if abs(x - middle) < range:
+                avg = (avg * (avg_num - 1) + x) / avg_num
+                avg_num += 1
+                if x == norm_rads:
+                    bad_data = False
+        self.game.players[0].speed = 
+        direction = -1 if pos_global < players_position else 1
+        switch = self.game.players[0].prev_direction != direction
+        self.game.players[0].prev_direction = direction
+        return direction, switch
         # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):

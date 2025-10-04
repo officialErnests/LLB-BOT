@@ -58,6 +58,7 @@ class ball_class:
     position : vector2D = None
     range = 0
     ball_speed = 0
+    previous_radiants : nbArray = 0
     prev_rad = []
     prev_rad_size = 20
     ball_rad = 0
@@ -167,9 +168,13 @@ class player_class:
     position : vector2D = None
     charecter = None
     speed = 0
+    prev_direction = 0
+    next_pos = 0
+    expected_speed = []
     def __init__(self, position, character):
         self.position = position
         self.character = character
+        self.expected_speed = [0 for n in range(10)]
 
 class gamedata:
     stage : stage_class = None

@@ -7,6 +7,16 @@ Leathal league blaze (from now on llb) bot using opencv :))
 1. To run this you will need leathal league blaze on steam (20bucks but it's a solid game ;DD)
 > If no llb demo: https://youtu.be/SNY3Zct-8NQ
 2. Then you will also need a way to run python
+3. With python you should have pip installed for simplicity
+4. Then you wan't to install these libraries
+```
+pip install opencv-contrib-python
+pip install keyboard
+pip install numpy
+pip install pillow
+pip install PyAutoGUI
+pip install pywin32
+```
 ## Run
 1. Open LLB and make sure not to minimize it (it auto closes if you do that)
 2. Run main.py (with your prefered py complier or intrepreter [idk what they are called ://])
@@ -17,17 +27,6 @@ Leathal league blaze (from now on llb) bot using opencv :))
 
 # Instructions
 ## Keyboard
-<<<<<<< HEAD
-Works even when not tabed in
-Q - quits
-5 - Compact mode 
-6 - Vision enabled
-7 - Bot following
-8 - Bot hitting
-9 - Simple ai
-0 - Reset border
-"-" - Funny
-=======
 Works even when not tabed in<br>
 Q - quits <br>
 5 - Compact mode<br>
@@ -37,7 +36,7 @@ Q - quits <br>
 9 - Simple ai<br>
 0 - Reset border<br>
 '-' - Funny
->>>>>>> c3c66dab9d7936789bab846cf541860d9a351e73
+
 # Py scripts
 main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)<br>
 util.py - this is where open cv gets input data as well where player is moved<br>

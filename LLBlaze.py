@@ -133,11 +133,21 @@ class ball_class:
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)
             positions.append(result.arr())
-            if result.x < self.prediction_x:
-                len2, hit_wall2 = result.distance_till_intersection(stage.arr(), direction * vector2D(-1,-1))
-                result2 = (result + direction * vector2D(-1,-1) * len2 )
-                cv.line(image, (int(result2.x - 50 + self.prediction_x), int(result2.y)),
-                                (int(result2.x + 50 + self.prediction_x), int(result2.y)),
+            if result.x < self.prediction_x < start.x or result.x > self.prediction_x > start.x :
+                staged = stage.arr()
+                if result.x < self.prediction_x < start.x:
+                    staged[2] = self.prediction_x
+                else:
+                    staged[0] = self.prediction_x
+                len2, hit_wall2 = result.distance_till_intersection(staged, direction * vector2D(-1,-1))
+                # print(len, )
+                # result2 = (result + direction * vector2D(-1,-1) * len2 )
+                result2 = (result + direction * vector2D(-1,-1) * len2)
+                cv.line(image, (int(self.prediction_x + 100), int(result2.y + 100)),
+                                (int(self.prediction_x - 100), int(result2.y - 100)),
+                                (255,255,0), 2) 
+                cv.line(image, (int(self.prediction_x + 100), int(result2.y - 100)),
+                                (int(self.prediction_x - 100), int(result2.y + 100)),
                                 (255,255,0), 2) 
                 break
             direction *= hit_wall
@@ -220,7 +230,7 @@ class gamedata:
         self.stage.draw(image)
         # self.ball.draw(image)
 
-        self.ball.prediction(image, self.stage, 10)
+        self.ball.prediction(image, self.stage, 20)
         
         #sends player input
         return_inputs = {

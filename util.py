@@ -98,6 +98,7 @@ class llb_bot:
                 debugTimer = time.time()
 
             #bot
+            #TODO Split the detection and movement
             self.bot_movement(start_img, prev_time, debugTimer, time.time() - self.prev_time)
 
             #Displays if hit is enabled 

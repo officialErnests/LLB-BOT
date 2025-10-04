@@ -27,6 +27,12 @@ class llb_bot:
     bot_enabled = False
     game = gamedata(vector2D(100,100))
 
+    #User controlled vars or smthing
+    compact_mode = True
+    vision_enabled = False
+    bot_enabled = False
+    bot_hit_enabled = True
+    simple_ai = False
     #adjust based on fps your getting
     #higger fps set like 0.2 or 0.1
     #else leave it at 0
@@ -51,10 +57,21 @@ class llb_bot:
     prev_time = 0
     prev_fps = [0 for n in range(5)]
     def __init__(self, windowName):
+        start_time = time.time()
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
             self.window_set = True
     
+    def cleaner_run(self):
+        while True:
+            #display
+            cv.imshow('funn.',start_img)
+            cv.waitKey(1)
+
+            #inputs
+            self.handle_inputs(debugTimer)
+
+
     #main function
     def run(self):
         start_time = time.time()
@@ -115,6 +132,7 @@ class llb_bot:
 
 
             #display
+            cv.imshow('2funn.',start_img)
             cv.imshow('funn.',start_img)
             cv.waitKey(1)
 

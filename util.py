@@ -49,6 +49,11 @@ class llb_bot:
         "e" : False,
         "s" : False,
         "a" : False,
+        "5" : False,
+        "6" : False,
+        "7" : False,
+        "8" : False,
+        "9" : False,
     }
     main_loop = True
     prev_time = 0
@@ -60,14 +65,21 @@ class llb_bot:
             self.window_set = True
     
     def cleaner_run(self):
-        logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
         cv.resizeWindow("NSLB", 300, 300)
         while self.main_loop:
             debugTimer = time.time()
+            logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
             #display
+            x,y = 10,100
+            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+5,y+5), 1, 4, (255,0,255) if self.compact_mode else (255, 255, 0), 10)
+            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4, (0,255,0) if self.compact_mode else (0,0,255), 5)
+            x,y = 10,200
+            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x+5,y+5), 1, 4, (255,0,255) if self.vision_enabled else (255, 255, 0), 10)
+            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x,y), 1, 4, (0,255,0) if self.vision_enabled else (0,0,255), 5)
+            
             cv.imshow('NSLB',logo)
             cv.waitKey(1)
 
@@ -246,6 +258,25 @@ class llb_bot:
             debugTimer = time.time()
 
     def handle_inputs(self, debugTimer):
+        #News 
+        if  keyboard.is_pressed("q"):
+            cv.destroyAllWindows()
+            lib_move.movement(False, False, False, False, False)
+            self.main_loop = False
+            return
+        if keyboard.is_pressed("5"):
+            if not self.debounces["5"]:
+                self.debounces["5"] = True
+                self.compact_mode = not self.compact_mode
+        else:
+            self.debounces["5"] = False
+        if keyboard.is_pressed("6"):
+            if not self.debounces["6"]:
+                self.debounces["6"] = True
+                self.vision_enabled = not self.vision_enabled
+        else:
+            self.debounces["6"] = False
+        #Olds
         if  keyboard.is_pressed("q"):
             cv.destroyAllWindows()
             lib_move.movement(False, False, False, False, False)

@@ -329,7 +329,7 @@ class llb_bot:
 
         players_position = self.game.players[0].position.x
         balls_position = self.game.ball.position.x
-        players_speed = self.game.players[0].speed 
+        players_speed = self.game.players[0].speed
         players_speed *= -1 if balls_position < players_position else 1
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
         if balls_speed == 0: balls_speed = 1
@@ -338,6 +338,10 @@ class llb_bot:
         # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         # return -1 if pos_global < players_position else 1
         # print(self.game.ball.ball_speed, self.game.players[0].speed)
+        distance_till_wall = 0
+        #WHY IS IT TWEAKING LIKE THAT XD
+        print(players_speed, balls_speed)
+        # print(self.game.stage.left > pos_global, players_position, balls_position, players_speed, balls_speed)
         if self.game.stage.left > pos_global:
             #gets distance till wall so player can be moved
             distance_till_wall = abs(self.game.stage.left - balls_position) / abs(balls_speed)
@@ -345,6 +349,7 @@ class llb_bot:
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.left
             balls_speed *= -1
+            # players_speed *= -1 if balls_position < players_position else 1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
         elif self.game.stage.right < pos_global:
             #gets distance till wall so player can be moved
@@ -353,8 +358,9 @@ class llb_bot:
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.right
             balls_speed *= -1
+            # players_speed *= -1 if balls_position < players_position else 1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-
+        # print(distance_till_wall)
         #displays players speed and prediction
         cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
@@ -446,8 +452,8 @@ class llb_bot:
     def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
         #whatever the fuck this is
         delta_x = balls_position - players_position
-        if (players_speed - balls_speed) == 0:
+        if (balls_speed - players_speed) == 0:
             return 0
-        pos = -players_speed * delta_x / (players_speed - balls_speed)
+        pos = -balls_speed * delta_x / (balls_speed - players_speed)
         pos_global = pos + balls_position
         return pos_global

@@ -275,7 +275,7 @@ class llb_bot:
                     self.detect_player(start_img, img_hsv_value)
                     self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos)
                     lib_move.movement(False, False, False, False, False)
-                    print(self.game.players[0].speed)
+                    # print(self.game.players[0].speed)
                     # calib_len = 5
                     # for i in range(calib_len):
                     #     time.sleep(0.3)
@@ -340,7 +340,7 @@ class llb_bot:
         # print(self.game.ball.ball_speed, self.game.players[0].speed)
         distance_till_wall = 0
         #WHY IS IT TWEAKING LIKE THAT XD
-        print(players_speed, balls_speed)
+        # print(players_speed, balls_speed)
         # print(self.game.stage.left > pos_global, players_position, balls_position, players_speed, balls_speed)
         if self.game.stage.left > pos_global:
             #gets distance till wall so player can be moved
@@ -364,7 +364,7 @@ class llb_bot:
         #displays players speed and prediction
         cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
-
+        self.game.ball.prediction_x = pos_global
         # if abs(players_position - pos_global) > 100:
         # else:
         #     print("2 close")
@@ -452,8 +452,8 @@ class llb_bot:
     def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
         #whatever the fuck this is
         delta_x = balls_position - players_position
-        if (balls_speed - players_speed) == 0:
+        if (players_speed - balls_speed) == 0:
             return 0
-        pos = -balls_speed * delta_x / (balls_speed - players_speed)
+        pos = -players_speed * delta_x / (players_speed - balls_speed)
         pos_global = pos + balls_position
         return pos_global

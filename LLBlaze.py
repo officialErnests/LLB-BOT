@@ -66,6 +66,7 @@ class ball_class:
     init_dir = 2
     last_positions = vector2D(0,0)
     prew_speed : nbArray = None
+    prediction_x = 0
     def __init__(self, position : vector2D = vector2D(0,0), state : ball_states = ball_states.NEUTRAL, position_history :int = 1):
         self.position = position
         self.state = state
@@ -127,10 +128,18 @@ class ball_class:
         positions = [self.position.arr()]
         start = self.position
         direction = self.get_directional_vector()
+
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)
             positions.append(result.arr())
+            if result.x < self.prediction_x:
+                len2, hit_wall2 = result.distance_till_intersection(stage.arr(), direction * vector2D(-1,-1))
+                result2 = (result + direction * vector2D(-1,-1) * len2 )
+                cv.line(image, (int(result2.x - 50 + self.prediction_x), int(result2.y)),
+                                (int(result2.x + 50 + self.prediction_x), int(result2.y)),
+                                (255,255,0), 2) 
+                break
             direction *= hit_wall
             start = result
 

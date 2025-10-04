@@ -19,13 +19,13 @@ Leathal league blaze (from now on llb) bot using opencv :))
 ## Keyboard
 Works even when not tabed in
 Q - quits
-W - enables / disables bot (sugest beeing tabed in llb)
-E - debug prints time
-R - resets the border for map (when you end game or start new one)
-S - enable hit mode (aka bot hit's the ball)
-D - spinbot XD
-T - decrese players speed
-G - increase players speed (used in calculating the hit point)
+5 - Compact mode
+6 - Vision enabled
+7 - Bot following
+8 - Bot hitting
+9 - Simple ai
+0 - Reset border
+\- - Funny
 # Py scripts
 main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)
 util.py - this is where open cv gets input data as well where player is moved

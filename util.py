@@ -67,19 +67,38 @@ class llb_bot:
     def cleaner_run(self):
 
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
-        cv.resizeWindow("NSLB", 300, 300)
+        cv.resizeWindow("NSLB", 400, 400)
         while self.main_loop:
             debugTimer = time.time()
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
             #display
             x,y = 10,100
-            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+5,y+5), 1, 4, (255,0,255) if self.compact_mode else (255, 255, 0), 10)
-            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4, (0,255,0) if self.compact_mode else (0,0,255), 5)
+            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+3,y+3), 1, 4,       (255,255,0) if self.compact_mode else (255,255,255), 15)
+            cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4,           (255,255,255) if self.compact_mode else (0,0,0), 5)
             x,y = 10,200
-            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x+5,y+5), 1, 4, (255,0,255) if self.vision_enabled else (255, 255, 0), 10)
-            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x,y), 1, 4, (0,255,0) if self.vision_enabled else (0,0,255), 5)
-            
+            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x+5,y+5), 1, 4,   (255,255,0) if self.vision_enabled else (255,255,255), 15)
+            cv.putText(logo, "[6] Vision enabled: " + ("V" if self.vision_enabled else "X"), (x,y), 1, 4,       (255,255,255) if self.vision_enabled else (0,0,0), 5)
+            x,y = 10,300
+            cv.putText(logo, "[7] Bot following: " + ("V" if self.bot_enabled else "X"), (x+5,y+5), 1, 4,  (255,255,0) if self.bot_enabled else (255,255,255), 15)
+            cv.putText(logo, "[7] Bot following: " + ("V" if self.bot_enabled else "X"), (x,y), 1, 4,      (255,255,255) if self.bot_enabled else (0,0,0), 5)
+            x,y = 10,400
+            cv.putText(logo, "[8] Bot hitting: " + ("V" if self.bot_hit_enabled else "X"), (x+5,y+5), 1, 4, (255,255,0) if self.bot_hit_enabled else (255,255,255), 15)
+            cv.putText(logo, "[8] Bot hitting: " + ("V" if self.bot_hit_enabled else "X"), (x,y), 1, 4,     (255,255,255) if self.bot_hit_enabled else (0,0,0), 5)
+            x,y = 10,500
+            cv.putText(logo, "[9] Simple ai: " + ("V" if self.simple_ai else "X"), (x+5,y+5), 1, 4,    (255,255,0) if self.simple_ai else (255,255,255), 15)
+            cv.putText(logo, "[9] Simple ai: " + ("V" if self.simple_ai else "X"), (x,y), 1, 4,        (255,255,255) if self.simple_ai else (0,0,0), 5)
+            x,y = 10,600
+            cv.putText(logo, "[0] - Reset border", (x+5,y+5), 1, 4,    (255,255,255), 15)
+            cv.putText(logo, "[0] - Reset border", (x,y), 1, 4,        (0,0,0), 5)
+            x,y = 10,700
+            cv.putText(logo, "[-] - Funny", (x+5,y+5), 1, 4,    (255,255,255), 15)
+            cv.putText(logo, "[-] - Funny", (x,y), 1, 4,        (0,0,0), 5)
+            x,y = 430,770
+            cv.putText(logo, "QUIT - [Q]", (x+5,y+5), 1, 4,    (255,255,255), 15)
+            cv.putText(logo, "QUIT - [Q]", (x,y), 1, 4,        (0,0,255), 5)
+
+            #Display            
             cv.imshow('NSLB',logo)
             cv.waitKey(1)
 
@@ -264,99 +283,50 @@ class llb_bot:
             lib_move.movement(False, False, False, False, False)
             self.main_loop = False
             return
+        
         if keyboard.is_pressed("5"):
             if not self.debounces["5"]:
                 self.debounces["5"] = True
                 self.compact_mode = not self.compact_mode
         else:
             self.debounces["5"] = False
+
         if keyboard.is_pressed("6"):
             if not self.debounces["6"]:
                 self.debounces["6"] = True
                 self.vision_enabled = not self.vision_enabled
         else:
             self.debounces["6"] = False
-        #Olds
-        if  keyboard.is_pressed("q"):
-            cv.destroyAllWindows()
-            lib_move.movement(False, False, False, False, False)
-            self.main_loop = False
-            return
-        if keyboard.is_pressed("w"):
-            if not self.debounces["w"]:
-                self.inputs["walk_direction"] = 0
-                self.debounces["w"] = True
+
+        if keyboard.is_pressed("7"):
+            if not self.debounces["7"]:
+                self.debounces["7"] = True
                 self.bot_enabled = not self.bot_enabled
-                if not self.bot_enabled:
-                    lib_move.movement(False, False, False, False, False)
         else:
-            self.debounces["w"] = False
+            self.debounces["7"] = False
+
+        if keyboard.is_pressed("8"):
+            if not self.debounces["8"]:
+                self.debounces["8"] = True
+                self.bot_hit_enabled = not self.bot_hit_enabled
+        else:
+            self.debounces["8"] = False
+
+        if keyboard.is_pressed("9"):
+            if not self.debounces["9"]:
+                self.debounces["9"] = True
+                self.simple_ai = not self.simple_ai
+        else:
+            self.debounces["9"] = False
             
-        if keyboard.is_pressed("r"):
-            if not self.debounces["r"]:
-                self.debounces["r"] = True
+        if keyboard.is_pressed("0"):
+            if not self.debounces["0"]:
+                self.debounces["0"] = True
                 self.game.game_start = False
         else:
-            self.debounces["r"] = False
+            self.debounces["0"] = False
 
-        if keyboard.is_pressed("s"):
-            if not self.debounces["s"]:
-                self.debounces["s"] = True
-                self.hit_enabled = not self.hit_enabled
-        else:
-            self.debounces["s"] = False
-        
-        if keyboard.is_pressed("e"):
-            if not self.debounces["e"]:
-                self.debounces["e"] = True
-                self.detailed_debuger = not self.detailed_debuger
-        else:
-            self.debounces["e"] = False
-
-        if keyboard.is_pressed("a"):
-            if not self.debounces["a"]:
-                self.debounces["a"] = True
-                if len(self.game.players) > 0:
-                    lib_move.movement(False, False, False, False, False)
-                    self.game.players[0].speed = 0
-                    time.sleep(0.1)
-                    lib_move.movement(False, False, True, False, False)
-                    time.sleep(0.1)
-                    lib_move.movement(False, False, False, False, True)
-                    start_img, img_hsv_value = self.get_image()
-                    self.detect_player(start_img, img_hsv_value)
-                    prev_playerPos = self.game.players[0].position.x
-                    lib_move.movement(False, False, False, True, False)
-                    time.sleep(0.2)
-                    start_img, img_hsv_value = self.get_image()
-                    self.detect_player(start_img, img_hsv_value)
-                    self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos)
-                    lib_move.movement(False, False, False, False, False)
-                    # print(self.game.players[0].speed)
-                    # calib_len = 5
-                    # for i in range(calib_len):
-                    #     time.sleep(0.3)
-                    #     prev_playerPos = self.game.players[0].position.x
-                    #     lib_move.movement(False, False, False, True, False)
-                    #     time.sleep(0.5)
-                    #     #refreshes image and takes mesure
-                    #     start_img, img_hsv_value = self.get_image()
-                    #     self.detect_player(start_img, img_hsv_value)
-                    #     self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
-                    #     print(self.game.players[0].speed)
-                    #     lib_move.movement(False, False, False, False, False)
-                    #     time.sleep(0.3)
-                    #     lib_move.movement(False, False, True, False, False)
-                    #     time.sleep(0.5)
-                    #     #refreshes image and takes mesure
-                    #     start_img, img_hsv_value = self.get_image()
-                    #     self.detect_player(start_img, img_hsv_value)
-                    #     self.game.players[0].speed += abs(self.game.players[0].position.x - prev_playerPos) / (calib_len * 2)
-                    #     print(self.game.players[0].speed)
-                    #     lib_move.movement(False, False, False, False, False)
-        else:
-            self.debounces["a"] = False
-        if keyboard.is_pressed("d"):
+        if keyboard.is_pressed("-"):
             lib_move.movement(False, False, False, False, True)
             time.sleep(1/240)
             lib_move.movement(False, False, True, False, False)
@@ -365,12 +335,7 @@ class llb_bot:
             time.sleep(1/240)
             lib_move.movement(False, False, False, True, False)
             time.sleep(1/240)
-            lib_move.movement(False, False, False, False, True)
-            self.debounces["a"] = False
-        if keyboard.is_pressed("t"):
-            self.game.players[0].speed -= 2
-        if keyboard.is_pressed("g"):
-            self.game.players[0].speed += 2
+            lib_move.movement(False, False, False, False, False)
 
         
         #final debug print :))

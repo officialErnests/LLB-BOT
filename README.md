@@ -1,14 +1,15 @@
 # LLB-BOT
 Leathal league blaze (from now on llb) bot using opencv :))
 ![Wow](https://hc-cdn.hel1.your-objectstorage.com/s/v3/14e9d6d755dd43bfb529bdde71463d45ccca62ec_screenshot_2025-09-29_213133.png)
+> demo video: https://youtu.be/SNY3Zct-8NQ (outdated for about 15hrs, new one comming tommorow)
 
-# How to run
-## prerequirments
-1. To run this you will need leathal league blaze on steam (20bucks but it's a solid game ;DD)
-> If no llb demo: https://youtu.be/SNY3Zct-8NQ
-2. Then you will also need a way to run python
-3. With python you should have pip installed for simplicity
-4. Then you wan't to install these libraries
+## Run
+###WINDOWS ONLY
+(idk haven't tested with others)<br>
+1. Download relese zip file
+2. Extarct the file
+3. Have python and pip installed (you can serch how to do that online)
+4. Open command prompt and install these libraries
 ```
 pip install opencv-contrib-python
 pip install keyboard
@@ -17,13 +18,10 @@ pip install pillow
 pip install PyAutoGUI
 pip install pywin32
 ```
-## Run
-1. Open LLB and make sure not to minimize it (it auto closes if you do that)
-2. Run main.py (with your prefered py complier or intrepreter [idk what they are called ://])
-3. If you want to bot to play then you have to choose raptor (aka guy with red cap)
-![Skin_in_question](https://hc-cdn.hel1.your-objectstorage.com/s/v3/6f2c3b605df2509f1a880bac5149201170b1ff1b_screenshot_2025-09-29_213005.png)
-4. As well it needs to be with keyboard inputs aka player 1
-5. Have fun
+5. run main.py (in files wich you unziped)
+6. Launch game "Lethal League Blaze"
+7. Go in any game mode and pick RAPTOR as it is the only charecter wich is supported atm
+8. Play the game and there you go it runs in bg ('5' on keyboard for visual screen)
 
 # Instructions
 ## Keyboard

@@ -19,9 +19,6 @@ class window_cut:
 
 class llb_bot:
     windows = None
-    img_test = cv.imread('testimg/test2.png',cv.IMREAD_UNCHANGED)
-    img_ball = cv.imread('examples/ball/Ball.png',cv.IMREAD_UNCHANGED)
-    w, h = img_ball.shape[1::-1]
     coolRect = None
     window_set = False
     bot_enabled = False
@@ -63,9 +60,15 @@ class llb_bot:
             self.window_set = True
     
     def cleaner_run(self):
-        while True:
+        logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
+
+        cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
+        cv.resizeWindow("NSLB", 300, 300)
+        while self.main_loop:
+            debugTimer = time.time()
+
             #display
-            cv.imshow('funn.',start_img)
+            cv.imshow('NSLB',logo)
             cv.waitKey(1)
 
             #inputs
@@ -74,6 +77,8 @@ class llb_bot:
 
     #main function
     def run(self):
+        print("DEPRICATED AS THE IMG WILL BE DRAWN WRONG")
+        # return
         start_time = time.time()
         while (self.main_loop):
             prev_time = time.time()
@@ -132,7 +137,7 @@ class llb_bot:
 
 
             #display
-            cv.imshow('2funn.',start_img)
+            # cv.imshow('2funn.',start_img)
             cv.imshow('funn.',start_img)
             cv.waitKey(1)
 

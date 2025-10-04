@@ -63,23 +63,25 @@ class nbArray():
     __sorted = False
     def __init__(self, array, /):
         self.array = array.copy()
-    def denoised_array(self, *, value_point = None):
-        returns_value = value_point is not None
+    def denoised_array(self, treshold, *, value_point : float = None):
+        extra_parameters = value_point is not None
 
         sorted_arr = self.get_sorted_array()
-        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
+        print(sorted_arr)
+        middle = sorted_arr[int(math.floor(self.lenght() / 2.0))]
         avg = 0
         avg_num = 1
-        range = 0.1
-        bad_data = True
+        if_outliner = True
         for x in sorted_arr:
-            if abs(x - middle) < range:
+            if abs(x - middle) < treshold:
                 avg = (avg * (avg_num - 1) + x) / avg_num
                 avg_num += 1
-                if returns_value and x == value_point:
-                    bad_data = False
-        if returns_value:
-            return bad_data
+                if extra_parameters and x == value_point:
+                    if_outliner = False
+        if extra_parameters:
+            return avg, if_outliner
+        else:
+            return avg
     
     def get_sorted_array(self):
         if not self.__sorted: self.arraySort()
@@ -89,11 +91,12 @@ class nbArray():
         self.__sorted = True
         sorted_arr = self.array.copy()
         sorted_arr.sort()
-        self.sorted = sorted_arr
-    def append(self, value):
+        self.__sortedarr = sorted_arr
+        print(sorted_arr)
+    def append(self, value, /):
         self.__updated()
         self.array.append(value)
-    def pop(self, pos):
+    def pop(self, pos, /):
         self.__updated()
         return self.array.pop(pos)
     def avg(self):

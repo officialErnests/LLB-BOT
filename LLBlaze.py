@@ -58,8 +58,7 @@ class ball_class:
     position : vector2D = None
     range = 0
     ball_speed = 0
-    previous_radiants : nbArray = 0
-    prev_rad = []
+    previous_radiants : nbArray = None
     prev_rad_size = 20
     ball_rad = 0
     ball_direction = 0
@@ -74,7 +73,7 @@ class ball_class:
         self.prew_speed = [0 for n in range(position_history)]
 
     def reset_rad(self, rads):
-        self.prev_rad = [rads for n in range(self.prev_rad_size)]
+        self.previous_radiants = nbArray([rads for n in range(self.prev_rad_size)])
 
     def update(self, delta):
         self.prew_speed.pop(0)
@@ -101,24 +100,12 @@ class ball_class:
             else:
                 return
         
-        self.prev_rad.pop(0)
-        self.prev_rad.append(norm_rads)
-        sorted_arr = self.prev_rad.copy()
-        sorted_arr.sort()
-        middle = sorted_arr[int(math.floor(self.prev_rad_size / 2))]
-        avg = 0
-        avg_num = 1
-        range = 0.1
-        bad_data = True
-        for x in sorted_arr:
-            if abs(x - middle) < range:
-                avg = (avg * (avg_num - 1) + x) / avg_num
-                avg_num += 1
-                if x == norm_rads:
-                    bad_data = False
+        self.previous_radiants.pop(0)
+        self.previous_radiants.append(norm_rads)
+        avg, if_outliner = self.previous_radiants.denoised_array(0.1, norm_rads)
         self.ball_rad = avg
         self.back_dir = norm_rads_uncaped < 0
-        if not bad_data:
+        if not if_outliner:
             self.ball_direction = math.floor((rads*2) / math.pi)/2
             if norm_rads_uncaped < 0:
                 self.ball_direction = self.ball_direction+0.5

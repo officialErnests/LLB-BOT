@@ -4,12 +4,16 @@ Leathal league blaze (from now on llb) bot using opencv :))
 > demo video: https://youtu.be/SNY3Zct-8NQ (outdated for about 15hrs, new one comming tommorow)
 
 ## Run
-###WINDOWS ONLY
-(idk haven't tested with others)<br>
-1. Download relese zip file
-2. Extarct the file
-3. Have python and pip installed (you can serch how to do that online)
-4. Open command prompt and install these libraries
+### To run exe
+1. Goto releses and download NSLB_EXE.zip or in github dist/NSLB.zip
+2. Extract the zip
+3. Run main.exe in zip
+4. Open Game (lethal league blaze) from steam or how you prefer
+5. When playing pick raptor as it only detects that charecter
+### To run python
+1. Clone repo
+2. Have python and pip installed (you can serch how to do that online)
+3. Open command prompt and install these libraries
 ```
 pip install opencv-contrib-python
 pip install keyboard
@@ -18,10 +22,10 @@ pip install pillow
 pip install PyAutoGUI
 pip install pywin32
 ```
-5. run main.py (in files wich you unziped)
-6. Launch game "Lethal League Blaze"
-7. Go in any game mode and pick RAPTOR as it is the only charecter wich is supported atm
-8. Play the game and there you go it runs in bg ('5' on keyboard for visual screen)
+4. run main.py (in files wich you unziped)
+5. Launch game "Lethal League Blaze"
+6. Go in any game mode and pick RAPTOR as it is the only charecter wich is supported atm
+7. Play the game and there you go it runs in bg ('5' on keyboard for visual screen)
 
 # Instructions
 ## Keyboard

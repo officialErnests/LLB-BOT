@@ -76,9 +76,17 @@ class llb_bot:
     def cleaner_run(self):
 
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
-        cv.resizeWindow("NSLB", 400, 400)
+        try:
+            cv.resizeWindow("NSLB", 400, 400)
+        except:
+            print("couldn't resize ;-;")
         cv.namedWindow("NOT SO LETHAL BLAZE", cv.WINDOW_NORMAL)
-        cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
+        
+        try:
+            cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
+        except:
+            print("couldn't resize ;-;")
+
         cv.destroyWindow("NOT SO LETHAL BLAZE")
         prev_time = 0
         while self.main_loop:
@@ -409,17 +417,8 @@ class llb_bot:
                     debugTimer = time.time()
 
                 #handles walking
-                match self.inputs["walk_direction"]:
-                    case -1:
-                        inputs["Left"] = True
-                    case 0:
-                        #if both disabled ;)
-                        pass
-                    case 1:
-                        inputs["Right"] = True
-                    case _:
-                        #if both passed ;)
-                        pass
+                if self.inputs["walk_direction"] == -1: inputs["Left"] = True
+                elif self.inputs["walk_direction"] == 1: inputs["Right"] = True
                 if self.detailed_debuger:
                     print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
                     debugTimer = time.time()
@@ -556,7 +555,7 @@ class llb_bot:
         # print(distance_till_wall)
         #displays players speed and prediction
         # cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
-        cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
+        cv.line(start_img, (round(pos_global), 0), (round(pos_global),round(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         self.game.ball.prediction_x = pos_global
         # if abs(players_position - pos_global) > 100:
         # else:
@@ -614,16 +613,6 @@ class llb_bot:
         self.get_color(start_img, img_hsv_value, 2,
                                 np.array([5, 229, 255]),
                                 np.array([5, 230, 255]))
-        match self.game.ball.state:
-            case 1:
-                # cv.putText(start_img, "Blue ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
-                pass
-            case 2:
-                # cv.putText(start_img, "Red ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
-                pass
-            case _:
-                # cv.putText(start_img, "No ball", (100,570), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
-                pass
 
     def get_color(self, start_img, hsv_img, ball_stage, mask_upper, mask_lower):
         color = (255, 255, 0) if ball_stage == 1 else (0, 0, 255)

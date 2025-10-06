@@ -133,7 +133,7 @@ class ball_class:
         for n in range(line_amount):
             len, hit_wall = start.distance_till_intersection(stage.arr(), direction)
             result = (start + direction * len)
-            positions.append(result.arr())
+            positions.append(result.round().arr())
             if result.x < self.prediction_x < start.x or result.x > self.prediction_x > start.x :
                 staged = stage.arr()
                 if result.x < self.prediction_x < start.x:
@@ -145,11 +145,11 @@ class ball_class:
                 # result2 = (result + direction * vector2D(-1,-1) * len2 )
                 result2 = (result + direction * vector2D(-1,-1) * len2)
                 self.prediction_y = result2.y
-                cv.line(image, (int(self.prediction_x + 100), int(result2.y + 100)),
-                                (int(self.prediction_x - 100), int(result2.y - 100)),
+                cv.line(image, (round(int(self.prediction_x + 100)), round(int(result2.y + 100))),
+                                (round(int(self.prediction_x - 100)), round(int(result2.y - 100))),
                                 (255,255,0), 2) 
-                cv.line(image, (int(self.prediction_x + 100), int(result2.y - 100)),
-                                (int(self.prediction_x - 100), int(result2.y + 100)),
+                cv.line(image, (round(int(self.prediction_x + 100)), round(int(result2.y - 100))),
+                                (round(int(self.prediction_x - 100)), round(int(result2.y + 100))),
                                 (255,255,0), 2) 
                 break
             direction *= hit_wall

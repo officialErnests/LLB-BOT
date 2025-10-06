@@ -94,7 +94,7 @@ class llb_bot:
             self.global_timer += time.time() - prev_time
             prev_time = time.time()
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
-            if not self.window:
+            if not self.window or not win32gui.IsWindow(self.window):
                 lib_move.movement(False,False,False,False,False)
                 self.compact_mode = True
                 self.vision_enabled = False
@@ -517,8 +517,6 @@ class llb_bot:
     #others aka 2nd in tree
 
     def calculate_next_pos(self, start_img, delta):
-        # print(self.game.players[0].speed, self.game.ball.ball_speed)
-
         players_position = self.game.players[0].position.x
         balls_position = self.game.ball.position.x
         players_speed = self.game.players[0].speed
@@ -526,49 +524,27 @@ class llb_bot:
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
         if balls_speed == 0: balls_speed = 1
         pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-        #checks if out of bounds
-        # cv.line(start_img, (int(pos_global), 0), (int(pos_global),int(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
-        # return -1 if pos_global < players_position else 1
-        # print(self.game.ball.ball_speed, self.game.players[0].speed)
         distance_till_wall = 0
-        #WHY IS IT TWEAKING LIKE THAT XD
-        # print(players_speed, balls_speed)
-        # print(self.game.stage.left > pos_global, players_position, balls_position, players_speed, balls_speed)
         if self.game.stage.left > pos_global:
-            #gets distance till wall so player can be moved
             distance_till_wall = abs(self.game.stage.left - balls_position) / abs(balls_speed)
-
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.left
             balls_speed *= -1
-            # players_speed *= -1 if balls_position < players_position else 1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
         elif self.game.stage.right < pos_global:
-            #gets distance till wall so player can be moved
             distance_till_wall = abs(self.game.stage.right - balls_position) / abs(balls_speed)
-
             players_position += players_speed * distance_till_wall
             balls_position = self.game.stage.right
             balls_speed *= -1
-            # players_speed *= -1 if balls_position < players_position else 1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-        # print(distance_till_wall)
-        #displays players speed and prediction
-        # cv.putText(start_img, "[T-G]Pl sp: " + str(players_speed), (int(0),int(self.coolRect.bottom - 50 - self.coolRect.top)), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
         cv.line(start_img, (round(pos_global), 0), (round(pos_global),round(self.coolRect.bottom  - self.coolRect.top)), (255,255,0), 2) 
         self.game.ball.prediction_x = pos_global
-        # if abs(players_position - pos_global) > 100:
-        # else:
-        #     print("2 close")
-
-        # direction = 0
         direction = -1 if  self.game.ball.position.x < self.game.players[0].position.x else 1
         switch = self.game.players[0].prev_direction != direction
         self.game.players[0].prev_direction = direction
         hit = abs(self.game.players[0].position.x - pos_global) < 100
         jump = self.game.players[0].position.y > self.game.ball.prediction_y
         return direction, switch, hit, jump
-        # cv.line(start_img, (pos, 0), (pos, self.coolRect.bottom), (255,255,0), 1) 
 
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
@@ -603,13 +579,9 @@ class llb_bot:
 
     def detect_ball(self, start_img, img_hsv_value):
         self.game.ball.state = 0
-
-        #detection
-        #BLUE
         self.get_color(start_img, img_hsv_value, 1,
                                 np.array([105, 243, 255]),
                                 np.array([105, 244, 255]))
-        #RED
         self.get_color(start_img, img_hsv_value, 2,
                                 np.array([5, 229, 255]),
                                 np.array([5, 230, 255]))
@@ -624,7 +596,6 @@ class llb_bot:
             cv.circle(start_img, (cX, cY), 20, (255, 255, 255), -1)
             cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
             cv.circle(start_img, (cX, cY), 5, color, -1)
-            # cv.putText(start_img, "x:" + str(cX) + " y:"+ str(cY), (50,50), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
             self.game.ball.state = ball_stage
             self.game.ball.position = vector2D(cX, cY)
     

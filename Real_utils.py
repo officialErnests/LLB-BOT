@@ -56,6 +56,8 @@ class vector2D():
     def vector_from_rad(self, rad):
         self.x = math.sin(rad)
         self.y = math.cos(rad)
+    def round(self):
+        return vector2D(round(self.x), round(self.y))
 
 class nbArray():
     array = []

@@ -1,0 +1,2 @@
+C:\Dev\Py\LLB-BOT\c_thingamajig\movement\movement_lib\x64\Debug\movement_lib.dll.lastcodeanalysissucceeded
+C:\Dev\Py\LLB-BOT\c_thingamajig\movement\movement_lib\movement_lib\x64\Debug\NativeCodeAnalysis.read.1.tlog

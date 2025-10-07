@@ -104,7 +104,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 25. https://github.com/boppreh/keyboard?tab=readme-ov-file#keyboard.KeyboardEvent
 26. https://stackoverflow.com/questions/60471477/using-python-how-can-i-detect-whether-a-program-is-minimized-or-maximized
 27. https://stackoverflow.com/questions/38970354/win32gui-findwindow-not-finding-window
-## C
+## Cpp
 1. https://stackoverflow.com/questions/145270/calling-c-c-from-python
 2. https://docs.python.org/3/library/ctypes.html#module-ctypes
 3. https://stackoverflow.com/questions/4755303/python-cdll-cant-find-module
@@ -113,6 +113,7 @@ Mirrored ball angle to pi/2 - https://www.desmos.com/calculator/nxaxu3afid
 5. https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 6. https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-keybdinput
 7. https://learncplusplus.org/how-to-use-a-game-pad-or-joystick-controller-in-c-on-windows/0
+8. https://stackoverflow.com/questions/4755303/python-cdll-cant-find-module
 
 # Tutorials used
 1. https://www.youtube.com/watch?v=WymCpVUPWQ4

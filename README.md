@@ -7,9 +7,13 @@ Leathal league blaze (from now on llb) bot using opencv :))
 ### To run exe
 1. Goto releses and download NSLB_EXE.zip or in github dist/NSLB.zip
 2. Extract the zip
-3. Run main.exe in zip
+3. Run main.exe in zip (if you get no dll found dw you can still run it, only it will be slower, but if you want full potential refer to 6.point)
 4. Open Game (lethal league blaze) from steam or how you prefer
 5. When playing pick raptor as it only detects that charecter
+And you are all set
+For those who want dll to work
+6. download https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-supported-redistributable-version
+7. go to 3 step
 ### To run python
 1. Clone repo
 2. Have python and pip installed (you can serch how to do that online)

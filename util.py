@@ -10,8 +10,6 @@ import time
 from Real_utils import *
 from LLBlaze import *
 
-emulated_cdll = False
-
 #Emulator for my lib
 class emulator_lib:
     def movement(self, hit, jump, left, right, up):
@@ -26,11 +24,36 @@ class emulator_lib:
         if up: pyautogui.keyDown("up")
         else: pyautogui.keyUp("up")
 lib_move = None
-if emulated_cdll:
-    lib_move = emulator_lib()
-else:
+try:
     from ctypes import cdll
     lib_move = cdll.LoadLibrary("./c_thingamajig/movement/movement_lib/x64/Debug/movement_lib.dll")
+except:
+    cv.namedWindow("Missing dependencies", cv.WINDOW_NORMAL)
+    cv.resizeWindow("Missing dependencies", 400, 400)
+    logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
+    y = 0
+    y += 50
+    cv.putText(logo, "UNABLE TO LOAD DLL", (50,y), 1, 4, (200,200,0), 3)
+    y += 50
+    cv.putText(logo, "(It's common issue)", (50,y), 1, 4, (200,200,0), 3)
+    y += 50
+    cv.putText(logo, "All this means is that", (50,y), 1, 4, (200,200,0), 3)
+    y += 50
+    cv.putText(logo, "You will have to use ", (50,y), 1, 4, (200,200,0), 3)
+    y += 50
+    cv.putText(logo, "pyautogui, which isn't bad", (50,y), 1, 4, (200,200,0), 3)
+    y += 50
+    cv.putText(logo, "but it is slower", (50,y), 1, 4, (200,200,0), 3)
+    y += 100
+    cv.putText(logo, "press any key to continue", (50,y), 1, 4, (200,200,0), 3)
+    cv.imshow("Missing dependencies", logo)
+    cv.waitKey()
+    try:
+        cv.destroyWindow("Missing dependencies")
+    except:
+        pass
+    lib_move = emulator_lib()
+
 
 #Used for removing ded space that is added in default windows
 class WND_CUT:
@@ -136,6 +159,10 @@ class llb_bot:
                 x,y = int(math.sin(animation_time+2.5)*120+20),800
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
+
+                x,y = 0,int(math.cos(animation_time+2.5)*200+400)
+                cv.putText(logo, "Q - QUIT", (x+5,y+5), 1, 10,    (255,255,255), 30)
+                cv.putText(logo, "Q - QUIT", (x,y), 1, 10,        (255,255,0), 15)
                 cv.imshow('NSLB',logo)
                 cv.waitKey(1)
                 time.sleep(0.1)

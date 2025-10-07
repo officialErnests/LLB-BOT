@@ -180,7 +180,7 @@ class gamedata:
     #Initilises data 
     def __init__(self, ball_pos : vector2D = vector2D(0,0), players = None):
         self.stage = stage_class(ball_pos)
-        self.ball = ball_class(ball_pos, [], 100)
+        self.ball = ball_class(ball_pos, 100)
         self.players.append(player_class(vector2D(0,0), "RAPTOR"))
     #Updates all data and prediction drawing
     def update(self, image, delta):

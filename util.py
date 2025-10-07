@@ -6,15 +6,25 @@ import keyboard
 import win32gui
 import win32con
 import time
-import os
 
 from Real_utils import *
 from LLBlaze import *
 
-#Loads my cpp library
-from ctypes import cdll
-lib_move = cdll.LoadLibrary('.\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\movement_lib.dll')
+#Emulator for my lib
+class emulator_lib:
+    def movement(self, hit, jump, left, right, up):
+        if hit: pyautogui.keyDown("c")
+        else: pyautogui.keyUp("c")
+        if jump: pyautogui.keyDown("space")
+        else: pyautogui.keyUp("space")
+        if left: pyautogui.keyDown("left")
+        else: pyautogui.keyUp("left")
+        if right: pyautogui.keyDown("right")
+        else: pyautogui.keyUp("right")
+        if up: pyautogui.keyDown("up")
+        else: pyautogui.keyUp("up")
 
+lib_move = emulator_lib()
 
 #Used for removing ded space that is added in default windows
 class WND_CUT:
@@ -76,12 +86,8 @@ class llb_bot:
             print("couldn't resize ;-;")
         
         #Main loop
-        Time_Till_Start = time.time
+        Time_Till_Start = time.time()
         while self.main_loop:
-
-            #Gets time at start of frame as well the together time
-            self.prev_time = time.time()
-            
             #fps
             self.prev_fps.pop(0)
             self.prev_fps.append(1/(time.time() - self.prev_time))
@@ -89,11 +95,16 @@ class llb_bot:
             for x in self.prev_fps:
                 sum += x / len(self.prev_fps)
 
+            #Gets time at start of frame as well the together time
+            self.prev_time = time.time()
+            
+
             #bg image or starting canvas
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
             #Checks if programm is running
             if not self.window or not win32gui.IsWindow(self.window):
+
                 lib_move.movement(False,False,False,False,False)
                 self.compact_mode = True
                 self.vision_enabled = False
@@ -293,7 +304,7 @@ class llb_bot:
                                   switcher)
             else:
                 #Gets the next position from calculate_next_pos()
-                self.movement_data["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+                self.movement_data["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img)
 
                 #Just checks movement direction and sets coresponding direction
                 if self.movement_data["walk_direction"] == -1: inputs["Left"] = True
@@ -393,6 +404,7 @@ class llb_bot:
     
     #gets where the collision will hapen between player and ball (only x as y is handeled by LLBlaze.py)
     def calculate_next_pos(self, start_img):
+        balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
         #Edge case
         if balls_speed == 0: balls_speed = 1
 
@@ -401,7 +413,6 @@ class llb_bot:
         balls_position = self.game.ball.position.x
         players_speed = self.game.players[0].speed
         players_speed *= -1 if balls_position < players_position else 1
-        balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
 
         #Gets prediction
         pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)

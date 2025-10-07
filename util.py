@@ -12,20 +12,9 @@ from Real_utils import *
 from LLBlaze import *
 
 #Loads my cpp library
-# from ctypes import cdll
-# lib_move = cdll.LoadLibrary('.\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\movement_lib.dll')
+from ctypes import cdll
+lib_move = cdll.LoadLibrary('.\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\movement_lib.dll')
 
-#THX Cpp 8
-import ctypes
-pathToWin32Environment = os.getcwd() + ".\\c_thingamajig\\movement\\movement_lib\\x64\\Debug\\"
-pathToDll = pathToWin32Environment + "movement_lib.dll"
-if not os.path.exists(pathToDll):
-    #Give up if none of the above succeeded:
-    raise Exception('Could not locate ' + pathToDll)
-curr_dir_before = os.getcwd()
-os.chdir(pathToWin32Environment)
-libmagic = ctypes.CDLL('magic1.dll')
-os.chdir(curr_dir_before)
 
 #Used for removing ded space that is added in default windows
 class WND_CUT:

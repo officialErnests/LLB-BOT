@@ -25,22 +25,21 @@ class llb_bot:
     windows = None
     ScreenRect = None
     bot_enabled = False
-    #Continue here
+    #All game date goes in game class (in #LLBlaze.py)
     game = gamedata(vector2D(100,100))
+    #Setable variables
     compact_mode = True
     vision_enabled = False
     bot_hit_enabled = True
     simple_ai = False
+    #Constants
+    JUMP_DELAY = 0.2
+    HIT_DELAY = 0.1
+    #Variables program uses
     window_open = False
-    jump_delay = 0.2
-    global_timer = 0
-    detailed_debuger = False
-    hit_enabled = False
-    inputs = {
+    movement_data = {
         "walk_direction" : 0,
-        "jump" : False,
         "jump_timer" : 0,
-        "Hit" : False,
         "Hit_timer" : 0,
     }
     debounces = {
@@ -56,31 +55,42 @@ class llb_bot:
     last_direction = False
     windowName = None
     window = None
+
+    #Gets the games window name as well finds the windows handle and window itself
     def __init__(self, windowName):
         self.windowName = windowName
         if len(pygetwindow.getWindowsWithTitle(windowName)):
             self.window = win32gui.FindWindow(None, windowName)
             self.windows = pygetwindow.getWindowsWithTitle(windowName)[0]
     
+    #this is the main loop
     def cleaner_run(self):
+
+        #Creates window
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
         try:
             cv.resizeWindow("NSLB", 400, 400)
         except:
             print("couldn't resize ;-;")
         
-        cv.namedWindow("NOT SO LETHAL BLAZE", cv.WINDOW_NORMAL)
-        try:
-            cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
-        except:
-            print("couldn't resize ;-;")
-
-        cv.destroyWindow("NOT SO LETHAL BLAZE")
-        prev_time = 0
+        #Main loop
+        Time_Till_Start = time.time
         while self.main_loop:
-            self.global_timer += time.time() - prev_time
-            prev_time = time.time()
+
+            #Gets time at start of frame as well the together time
+            self.prev_time = time.time()
+            
+            #fps
+            self.prev_fps.pop(0)
+            self.prev_fps.append(1/(time.time() - self.prev_time))
+            sum = 0
+            for x in self.prev_fps:
+                sum += x / len(self.prev_fps)
+
+            #bg image or starting canvas
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
+
+            #Checks if programm is running
             if not self.window or not win32gui.IsWindow(self.window):
                 lib_move.movement(False,False,False,False,False)
                 self.compact_mode = True
@@ -88,22 +98,23 @@ class llb_bot:
                 self.bot_enabled = False
                 self.bot_hit_enabled = True
                 self.simple_ai = False
-                x,y = int(math.sin(self.global_timer)*120+20),50
+                animation_time = time.time() - Time_Till_Start
+                x,y = int(math.sin(animation_time)*120+20),50
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
-                x,y = int(math.sin(self.global_timer+0.5)*120+20),200
+                x,y = int(math.sin(animation_time+0.5)*120+20),200
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
-                x,y = int(math.sin(self.global_timer+1)*120+20),350
+                x,y = int(math.sin(animation_time+1)*120+20),350
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
-                x,y = int(math.sin(self.global_timer+1.5)*120+20),500
+                x,y = int(math.sin(animation_time+1.5)*120+20),500
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
-                x,y = int(math.sin(self.global_timer+2)*120+20),650
+                x,y = int(math.sin(animation_time+2)*120+20),650
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
-                x,y = int(math.sin(self.global_timer+2.5)*120+20),800
+                x,y = int(math.sin(animation_time+2.5)*120+20),800
                 cv.putText(logo, "!!NO LLB??", (x+5,y+5), 1, 10,    (255,255,255), 30)
                 cv.putText(logo, "!!NO LLB??", (x,y), 1, 10,        (0,0,255), 15)
                 cv.imshow('NSLB',logo)
@@ -113,13 +124,12 @@ class llb_bot:
                 if self.window_open:
                     self.window_open = False
                     cv.destroyWindow('NOT SO LETHAL BLAZE')
-
                 if len(pygetwindow.getWindowsWithTitle(self.windowName)):
                     self.window = win32gui.FindWindow(None, self.windowName)
                     self.windows = pygetwindow.getWindowsWithTitle(self.windowName)[0]
-
                 continue
 
+            #Checks if programm is minimized
             if win32gui.GetWindowPlacement(self.window)[1] == win32con.SW_SHOWMINIMIZED:
                 lib_move.movement(False,False,False,False,False)
                 self.compact_mode = True
@@ -127,16 +137,10 @@ class llb_bot:
                 self.bot_enabled = False
                 self.bot_hit_enabled = True
                 self.simple_ai = False
-                self.prev_fps.pop(0)
-                self.prev_fps.append(1/(time.time() - self.prev_time))
-                sum = 0
-                for x in self.prev_fps:
-                    sum += x / len(self.prev_fps)
 
                 x,y = 10,780
                 cv.putText(logo, "FPS:" + str(round(sum,2)), (x+5,y+5), 1, 3,    (255,255,255), 15)
                 cv.putText(logo, "FPS:" + str(round(sum,2)), (x,y), 1, 3,        (0,0,0), 5)
-                self.prev_time = time.time()
                 x,y = 10,100
                 cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+3,y+3), 1, 4,       (255,255,0) if self.compact_mode else (255,255,255), 15)
                 cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4,           (255,255,255) if self.compact_mode else (0,0,0), 5)
@@ -167,31 +171,28 @@ class llb_bot:
                 if self.window_open:
                     self.window_open = False
                     cv.destroyWindow('NOT SO LETHAL BLAZE')
-
                 cv.imshow('NSLB',logo)
                 cv.waitKey(1)
                 time.sleep(0.1)
                 self.handle_inputs()
                 continue
 
+            #Does all detection checks aka vision
             start_img, img_hsv_value = self.get_image()
             if self.vision_enabled:
                 self.detect_player(start_img, img_hsv_value)
                 self.detect_hit(start_img, img_hsv_value)
                 self.detect_ball(start_img, img_hsv_value)
+                #Updates all variables (normalises and processes next positions)
                 self.game.update(start_img, time.time() - self.prev_time)
             
-            self.bot_movement(start_img, prev_time, time.time() - self.prev_time)
-            self.prev_fps.pop(0)
-            self.prev_fps.append(1/(time.time() - self.prev_time))
-            sum = 0
-            for x in self.prev_fps:
-                sum += x / len(self.prev_fps)
+            #Moves bot based on game data
+            self.bot_movement(start_img, time.time() - self.prev_time)
 
+            #Gui text
             x,y = 10,780
             cv.putText(logo, "FPS:" + str(round(sum,2)), (x+5,y+5), 1, 3,    (255,255,255), 15)
             cv.putText(logo, "FPS:" + str(round(sum,2)), (x,y), 1, 3,        (0,0,0), 5)
-            self.prev_time = time.time()
             x,y = 10,100
             cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x+3,y+3), 1, 4,       (255,255,0) if self.compact_mode else (255,255,255), 15)
             cv.putText(logo, "[5] Compact mode: " + ("V" if self.compact_mode else "X"), (x,y), 1, 4,           (255,255,255) if self.compact_mode else (0,0,0), 5)
@@ -217,6 +218,8 @@ class llb_bot:
             cv.putText(logo, "QUIT - [Q]", (x+5,y+5), 1, 4,    (255,255,255), 15)
             cv.putText(logo, "QUIT - [Q]", (x,y), 1, 4,        (0,0,255), 5)
             cv.imshow('NSLB',logo)
+
+            #displays how everything is detected
             if not self.compact_mode:
                 cv.imshow('NOT SO LETHAL BLAZE',start_img)
                 self.window_open = True
@@ -224,42 +227,28 @@ class llb_bot:
                 self.window_open = False
                 cv.destroyWindow('NOT SO LETHAL BLAZE')
 
+            #Waits so programm just dosn;t rush inf cycles (as well open cv just crashes if there isn't no cv.waitkey XD)
             cv.waitKey(1)
             self.handle_inputs()
 
+    #Takes screenshot and crops it so it fits the game window then creates 2 versions one BGR and second HSV
     def get_image(self):
-        if self.detailed_debuger: debugTimer_bot = time.time()
-
         img_hsv_value = None
         start_img = None
         self.ScreenRect = self.windows._getWindowRect()
-        if self.detailed_debuger:
-            print("-Window rect :" + str(round(time.time() - debugTimer_bot,3)))
-            debugTimer = time.time()
-
         screenshot = pyautogui.screenshot()\
             .crop((self.ScreenRect.left + WND_CUT.left,
                     self.ScreenRect.top + WND_CUT.top,
                     self.ScreenRect.right - WND_CUT.right,
                     self.ScreenRect.bottom - WND_CUT.bottom))
-        if self.detailed_debuger:
-            print("-Screenshot :" + str(round(time.time() - debugTimer_bot,3)))
-            debugTimer = time.time()
-
         open_cv_screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
         img_hsv_value = cv.cvtColor(open_cv_screenshot, cv.COLOR_BGR2HSV)
         start_img = open_cv_screenshot
-        if self.detailed_debuger:
-            print("-Color convert :" + str(round(time.time() - debugTimer_bot,3)))
-            debugTimer = time.time()
-
-        if self.detailed_debuger:
-            print("Loaded img in:" + str(round(time.time() - debugTimer,3)))
-            debugTimer = time.time()
-
         return start_img, img_hsv_value
 
-    def bot_movement(self, start_img, prev_time, delta):
+    #Makes bot move and hit based on game data
+    def bot_movement(self, start_img, delta):
+        #These are used so i only have to call library once
         inputs = {
             "Hit" : False,
             "Jump" : False,
@@ -267,78 +256,78 @@ class llb_bot:
             "Right" : False
         }
         if self.bot_enabled:
-            if self.detailed_debuger: debugTimer_bot = time.time()
             if self.simple_ai:
+                #Switcher is used to instantly turn around (presing up before switching direction)
                 switcher = False
                 if self.last_direction != self.game.players[0].position.x > self.game.ball.position.x:
                     self.last_direction = self.game.players[0].position.x > self.game.ball.position.x
                     switcher = True
                 
+                #Handles jump and if held down then after cooldown it represses it so player can double jump
                 inputs["Jump"] = self.game.players[0].position.y > self.game.ball.position.y
-                if self.inputs["jump_timer"] <= 0:
-                    self.inputs["jump_timer"] = self.jump_delay
+                if self.movement_data["jump_timer"] <= 0:
+                    self.movement_data["jump_timer"] = self.JUMP_DELAY
                     inputs["Jump"] = False
-                elif self.inputs["jump"]:
-                    self.inputs["jump_timer"] -= time.time() - prev_time
+                elif inputs["Jump"]:
+                    self.movement_data["jump_timer"] -= delta
+                else:
+                    self.movement_data["jump_timer"] = 0
 
-                self.inputs["Hit"] = self.game.players[0].position.distance_to(self.game.ball.position) <  200
-                if self.inputs["Hit_timer"] > 0:
-                    self.inputs["Hit_timer"] -= time.time() - prev_time
-                elif self.inputs["Hit"] and self.bot_hit_enabled:
-                    self.inputs["Hit_timer"] = 0.1
-                    inputs["Hit"] = True
+                #Sames as jump it holds hit and after timer represes hit 
+                inputs["Hit"] = self.game.players[0].position.distance_to(self.game.ball.position) <  200
+                if self.movement_data["Hit_timer"] <= 0:
+                    self.movement_data["Hit_timer"] = self.HIT_DELAY
+                    inputs["Hit"] = False
+                elif inputs["Hit"]:
+                    self.movement_data["Hit_timer"] -= delta
+                else:
+                    self.movement_data["Hit_timer"] = 0
 
-                if self.detailed_debuger:
-                    print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                lib_move.movement(self.inputs["Hit"],
+                #Calls library to execute 
+                lib_move.movement(inputs["Hit"],
                                   inputs["Jump"],
                                   self.game.players[0].position.x > self.game.ball.position.x, 
                                   self.game.players[0].position.x < self.game.ball.position.x,
                                   switcher)
             else:
-                self.inputs["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+                #Gets the next position from calculate_next_pos()
+                self.movement_data["walk_direction"], switch, hit, jump = self.calculate_next_pos(start_img, delta)
+
+                #Just checks movement direction and sets coresponding direction
+                if self.movement_data["walk_direction"] == -1: inputs["Left"] = True
+                elif self.movement_data["walk_direction"] == 1: inputs["Right"] = True
+
+                #Same as simple ai
                 inputs["Jump"] = jump
-                if self.inputs["jump_timer"] <= 0:
-                    self.inputs["jump_timer"] = self.jump_delay
+                if self.movement_data["jump_timer"] <= 0:
+                    self.movement_data["jump_timer"] = self.JUMP_DELAY
                     inputs["Jump"] = False
-                elif self.inputs["jump"]:
-                    self.inputs["jump_timer"] -= time.time() - prev_time
-
-                if self.detailed_debuger:
-                    print("-jump :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                if self.inputs["walk_direction"] == -1: inputs["Left"] = True
-                elif self.inputs["walk_direction"] == 1: inputs["Right"] = True
-                if self.detailed_debuger:
-                    print("-movement :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
-
-                self.inputs["Hit"] = hit
-                if self.inputs["Hit_timer"] > 0:
-                    self.inputs["Hit_timer"] -= time.time() - prev_time
-                elif self.inputs["Hit"] and self.bot_hit_enabled:
-                    self.inputs["Hit_timer"] = 0.1
-                    inputs["Hit"] = True
-
-                if self.detailed_debuger:
-                    print("-Hit :" + str(round(time.time() - debugTimer_bot,3)))
-                    debugTimer = time.time()
+                elif inputs["Jump"]:
+                    self.movement_data["jump_timer"] -= delta
+                else:
+                    self.movement_data["jump_timer"] = 0
+                
+                inputs["Hit"] = hit
+                if self.movement_data["Hit_timer"] <= 0:
+                    self.movement_data["Hit_timer"] = self.HIT_DELAY
+                    inputs["Hit"] = False
+                elif inputs["Hit"]:
+                    self.movement_data["Hit_timer"] -= delta
+                else:
+                    self.movement_data["Hit_timer"] = 0
 
                 lib_move.movement(inputs["Hit"], inputs["Jump"], inputs["Left"], inputs["Right"], switch)
-        if self.detailed_debuger:
-            print("Bot processed:" + str(round(time.time() - debugTimer,3)))
-            debugTimer = time.time()
 
+    #Used to handle key presses (q and 5-0 and '-')
     def handle_inputs(self):
+        #Quits
         if  keyboard.is_pressed("q"):
             cv.destroyAllWindows()
             lib_move.movement(False, False, False, False, False)
             self.main_loop = False
             return
         
+        #Enables/disables compact mode (Enabled by default)
         if keyboard.is_pressed("num 5"):
             if not self.debounces["5"]:
                 self.debounces["5"] = True
@@ -346,48 +335,49 @@ class llb_bot:
         else:
             self.debounces["5"] = False
 
+        #Enables/disables detection aka vision aka opencv detection
         if keyboard.is_pressed("num 6")  and not keyboard.is_pressed("right"):
             if not self.debounces["6"]:
                 self.debounces["6"] = True
                 self.vision_enabled = not self.vision_enabled
-
         else:
             self.debounces["6"] = False
 
+        #Enables/disables bot movement
         if keyboard.is_pressed("num 7") and not keyboard.is_pressed("home"):
             if not self.debounces["7"]:
                 self.debounces["7"] = True
                 self.bot_enabled = not self.bot_enabled
                 if not self.bot_enabled:
                     lib_move.movement(False,False,False,False,False)
-
         else:
             self.debounces["7"] = False
 
+        #Enables/disables bot hitting (Enabled by default)
         if keyboard.is_pressed("num 8") and not keyboard.is_pressed("up"):
             if not self.debounces["8"]:
                 self.debounces["8"] = True
                 self.bot_hit_enabled = not self.bot_hit_enabled
-
         else:
             self.debounces["8"] = False
 
+        #Enables/disables simpler ai
         if keyboard.is_pressed("num 9") and not keyboard.is_pressed("page up"):
             if not self.debounces["9"]:
                 self.debounces["9"] = True
                 self.simple_ai = not self.simple_ai
-
         else:
             self.debounces["9"] = False
-            
+        
+        #Resets border
         if keyboard.is_pressed("num 0") and not keyboard.is_pressed("insert"):
             if not self.debounces["0"]:
                 self.debounces["0"] = True
                 self.game.game_start = False
-
         else:
             self.debounces["0"] = False
 
+        #Does the funny dance
         if keyboard.is_pressed("-"):
             lib_move.movement(False, False, False, False, True)
             time.sleep(1/240)
@@ -398,20 +388,23 @@ class llb_bot:
             lib_move.movement(False, False, False, True, False)
             time.sleep(1/240)
             lib_move.movement(False, False, False, False, False)
-
-        if self.detailed_debuger and not self.debounces["e"]:
-            print("Inputs processed:" + str(round(time.time() - debugTimer,3)))
-            debugTimer = time.time()
     
-    def calculate_next_pos(self, start_img, delta):
+    #gets where the collision will hapen between player and ball (only x as y is handeled by LLBlaze.py)
+    def calculate_next_pos(self, start_img):
+        #Edge case
         if balls_speed == 0: balls_speed = 1
+
+        #Sets up all variables
         players_position = self.game.players[0].position.x
         balls_position = self.game.ball.position.x
         players_speed = self.game.players[0].speed
         players_speed *= -1 if balls_position < players_position else 1
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
+
+        #Gets prediction
         pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
-        distance_till_wall = 0
+
+        #Checks if prediction is past borders if so run prediction again but from borders towards player to get collision point
         if self.game.stage.left > pos_global:
             distance_till_wall = abs(self.game.stage.left - balls_position) / abs(balls_speed)
             players_position += players_speed * distance_till_wall
@@ -425,7 +418,10 @@ class llb_bot:
             balls_speed *= -1
             pos_global = self.get_prediction(players_position,balls_position,players_speed,balls_speed)
 
+        #Draws collision x
         cv.line(start_img, (round(pos_global), 0), (round(pos_global),round(self.ScreenRect.bottom  - self.ScreenRect.top)), (255,255,0), 2) 
+        
+        #Outputs bot movement
         self.game.ball.prediction_x = pos_global
         direction = -1 if  self.game.ball.position.x < self.game.players[0].position.x else 1
         switch = self.game.players[0].prev_direction != direction
@@ -434,6 +430,7 @@ class llb_bot:
         jump = self.game.players[0].position.y > self.game.ball.prediction_y
         return direction, switch, hit, jump
 
+    #Gets wheter somone is hitting the ball
     def detect_hit(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
         var = 65/2
@@ -452,6 +449,7 @@ class llb_bot:
         if detected > 2:
             self.game.ball.init_dir = 1
 
+    #Gets position of bot
     def detect_player(self, start_img, img_hsv_value):
         screen_witdth = start_img.shape
         masked_screenshot = img_hsv_value[120:screen_witdth[0], 0:screen_witdth[1]]
@@ -459,6 +457,7 @@ class llb_bot:
                                     np.array([1, 242, 217]),
                                     np.array([2, 242, 217]))
         movement = cv.moments(thresh)
+        #If player is found
         if movement['m00'] > 0:
             cX = int(movement["m10"] / movement["m00"])
             cY = int(movement["m01"] / movement["m00"]) + 120
@@ -466,6 +465,7 @@ class llb_bot:
             cv.circle(start_img, (cX, cY), 10, (0, 0, 0), -1)
             self.game.players[0].position = vector2D(cX, cY)
 
+    #Gets position of ball (abscured)
     def detect_ball(self, start_img, img_hsv_value):
         self.game.ball.state = 0
         self.get_color(start_img, img_hsv_value, 1,
@@ -475,10 +475,12 @@ class llb_bot:
                                 np.array([5, 229, 255]),
                                 np.array([5, 230, 255]))
 
+    #Gets ball
     def get_color(self, start_img, hsv_img, ball_stage, mask_upper, mask_lower):
         color = (255, 255, 0) if ball_stage == 1 else (0, 0, 255)
         ret, thresh = self.color_find(hsv_img, mask_upper, mask_lower)
         movement = cv.moments(thresh)
+        #If ball exists
         if movement['m00'] > 0:
             cX = int(movement["m10"] / movement["m00"])
             cY = int(movement["m01"] / movement["m00"])
@@ -488,16 +490,16 @@ class llb_bot:
             self.game.ball.state = ball_stage
             self.game.ball.position = vector2D(cX, cY)
     
+    #Finds specific color in hsv_img
     def color_find(self, hsv_img, mask_upper, mask_lower):
         masked_screenshot = cv.inRange(hsv_img, mask_upper, mask_lower)
         return cv.threshold(masked_screenshot,254,255,0)
     
+    #Some insane math that returns x position of meating point
     def get_prediction(self, players_position, balls_position, players_speed, balls_speed):
-        #whatever the fuck this is
         delta_x = players_position - balls_position
         if (players_speed - balls_speed) == 0:
             return 0
-        
         pos = -players_speed * delta_x / (players_speed - balls_speed)
         pos_global = pos + players_position
         return pos_global

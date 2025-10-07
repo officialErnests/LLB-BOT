@@ -124,6 +124,8 @@ class ball_class:
                 result2 = (result + direction * vector2D(-1,-1) * len2)
                 self.prediction_y = result2.y
                 #Draws prediction line
+                if not self.prediction_x: self.prediction_x = 0
+                if not result2.y: result2.y = 0
                 cv.line(image, (round(int(self.prediction_x + 100)), round(int(result2.y + 100))),
                                 (round(int(self.prediction_x - 100)), round(int(result2.y - 100))),
                                 (255,255,0), 2) 

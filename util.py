@@ -10,6 +10,8 @@ import time
 from Real_utils import *
 from LLBlaze import *
 
+emulated_cdll = False
+
 #Emulator for my lib
 class emulator_lib:
     def movement(self, hit, jump, left, right, up):
@@ -23,8 +25,12 @@ class emulator_lib:
         else: pyautogui.keyUp("right")
         if up: pyautogui.keyDown("up")
         else: pyautogui.keyUp("up")
-
-lib_move = emulator_lib()
+lib_move = None
+if emulated_cdll:
+    lib_move = emulator_lib()
+else:
+    from ctypes import cdll
+    lib_move = cdll.LoadLibrary("./c_thingamajig/movement/movement_lib/x64/Debug/movement_lib.dll")
 
 #Used for removing ded space that is added in default windows
 class WND_CUT:

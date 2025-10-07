@@ -1,4 +1,7 @@
+#NB UTILS V0.2
 import math
+
+#Vector 2d class with some level of raycasting
 class vector2D():
     x = 0
     y = 0
@@ -59,6 +62,7 @@ class vector2D():
     def round(self):
         return vector2D(round(self.x), round(self.y))
 
+#Array for denoising data
 class nbArray():
     array = []
     __sortedarr = []

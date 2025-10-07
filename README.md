@@ -40,10 +40,10 @@ Q - quits <br>
 '-' - Funny
 
 # Py scripts
-main.py - it is just manager for others, if i need another layer i can easily add it :DD (or bot)<br>
-util.py - this is where open cv gets input data as well where player is moved<br>
-Real_utils.py - My smart idea to create custom vector 2d class XD<br>
-LLBlazze.py - holds all classes for game like ball and others as well do calculation on what to do (moves player and calculates ball bounces)
+main.py - launches util.py, mostly just an leftover artifact
+util.py - houses main logic that detects all game objects, draws gui and takes inputs
+Real_utils.py - has vector2d and nbArray for denoising is used as types
+LLBlaze.py - holds game data and predicts some parts and gets speed
 
 # How does it work?
 1. Im using color to detect colors in game (specific tones) it's pretty easy since this game is stylized and colors are pretty carefully chosen

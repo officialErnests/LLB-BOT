@@ -26,7 +26,14 @@ pip install pywin32
 5. Launch game "Lethal League Blaze"
 6. Go in any game mode and pick RAPTOR as it is the only charecter wich is supported atm
 7. Play the game and there you go it runs in bg ('5' on keyboard for visual screen)
-
+#### TO COMPILE PY
+1. install pyinstaller
+```
+pip install pyinstaller
+```
+2. open command and navigate to project root (contains main.py)
+3. run `pyinstaller main.py --onefile --windowed`
+4. export will be in ./dist folder
 # Instructions
 ## Keyboard
 Works even when not tabed in<br>

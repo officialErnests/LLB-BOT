@@ -96,7 +96,7 @@ class llb_bot:
     last_direction = False
     windowName = None
     window = None
-
+    NSLB_Window_compact = None
     #Gets the games window name as well finds the windows handle and window itself
     def __init__(self, windowName):
         self.windowName = windowName
@@ -109,6 +109,7 @@ class llb_bot:
 
         #Creates window
         cv.namedWindow("NSLB", cv.WINDOW_NORMAL)
+        self.NSLB_Window = win32gui.FindWindow(None, "NSLB")
         try:
             cv.resizeWindow("NSLB", 400, 400)
         except:
@@ -132,7 +133,7 @@ class llb_bot:
             logo = cv.imread('Assets/Logo.png',cv.IMREAD_UNCHANGED)
 
             #Checks if programm is running
-            if not self.window or not win32gui.IsWindow(self.window):
+            if not (self.window and win32gui.IsWindow(self.window)):
 
                 lib_move.movement(False,False,False,False,False)
                 self.compact_mode = True
@@ -271,7 +272,6 @@ class llb_bot:
                 self.window_open = True
             elif self.window_open:
                 self.window_open = False
-                cv.destroyWindow('NOT SO LETHAL BLAZE')
 
             #Waits so programm just dosn;t rush inf cycles (as well open cv just crashes if there isn't no cv.waitkey XD)
             cv.waitKey(1)
@@ -368,16 +368,23 @@ class llb_bot:
     def handle_inputs(self):
         #Quits
         if  keyboard.is_pressed("q"):
-            cv.destroyAllWindows()
-            lib_move.movement(False, False, False, False, False)
-            self.main_loop = False
-            return
+            self.quit()
+        
+        if not (self.NSLB_Window and win32gui.IsWindow(self.NSLB_Window)):
+            self.quit()
+        
+        if not (self.NSLB_Window_compact and win32gui.IsWindow(self.NSLB_Window_compact)) and not self.compact_mode:
+            self.compact_mode = True
         
         #Enables/disables compact mode (Enabled by default)
         if keyboard.is_pressed("num 5"):
             if not self.debounces["5"]:
                 self.debounces["5"] = True
                 self.compact_mode = not self.compact_mode
+                if not self.compact_mode:
+                    cv.namedWindow('NOT SO LETHAL BLAZE')
+                    cv.resizeWindow("NOT SO LETHAL BLAZE", 400, 400)
+                    self.NSLB_Window_compact = win32gui.FindWindow(None, "NOT SO LETHAL BLAZE")
         else:
             self.debounces["5"] = False
 
@@ -434,7 +441,7 @@ class llb_bot:
             lib_move.movement(False, False, False, True, False)
             time.sleep(1/240)
             lib_move.movement(False, False, False, False, False)
-    
+
     #gets where the collision will hapen between player and ball (only x as y is handeled by LLBlaze.py)
     def calculate_next_pos(self, start_img):
         balls_speed = (self.game.ball.get_directional_vector() * self.game.ball.ball_speed).x
@@ -556,3 +563,10 @@ class llb_bot:
         pos = -players_speed * delta_x / (players_speed - balls_speed)
         pos_global = pos + players_position
         return pos_global
+    
+    #quits programm
+    def quit(self):
+        cv.destroyAllWindows()
+        lib_move.movement(False, False, False, False, False)
+        self.main_loop = False
+        return

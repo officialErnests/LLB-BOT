@@ -193,7 +193,6 @@ class gamedata:
                 estimate += self.prev_hits[x]
             estimate /= len(self.prev_hits)
             self.stage.draw(image)
-            self.ball.prediction(image, self.stage, 100)
         elif len(self.prev_hits) > 0:
             self.prev_hits = []
         self.players[0].update(delta)
@@ -203,5 +202,4 @@ class gamedata:
             self.stage.reset(self.ball.position)
         self.stage.update_border(self.ball)
         self.stage.draw(image)
-        self.ball.prediction(image, self.stage, 20)
         

@@ -320,7 +320,7 @@ class llb_bot:
                     self.movement_data["jump_timer"] = 0
 
                 #Sames as jump it holds hit and after timer represes hit 
-                inputs["Hit"] = self.game.players[0].position.distance_to(self.game.ball.position) <  200
+                inputs["Hit"] = (self.game.players[0].position.distance_to(self.game.ball.position) < 200) if self.bot_hit_enabled else False
                 if self.movement_data["Hit_timer"] <= 0:
                     self.movement_data["Hit_timer"] = self.HIT_DELAY
                     inputs["Hit"] = False
@@ -353,7 +353,7 @@ class llb_bot:
                 else:
                     self.movement_data["jump_timer"] = 0
                 
-                inputs["Hit"] = hit
+                inputs["Hit"] = hit if self.bot_hit_enabled else False
                 if self.movement_data["Hit_timer"] <= 0:
                     self.movement_data["Hit_timer"] = self.HIT_DELAY
                     inputs["Hit"] = False
@@ -467,6 +467,9 @@ class llb_bot:
         #Draws collision x
         cv.line(start_img, (round(pos_global), 0), (round(pos_global),round(self.ScreenRect.bottom  - self.ScreenRect.top)), (255,255,0), 2) 
         
+        #Calls ball so can get collision y position
+        self.game.ball.prediction(start_img, self.game.stage, 20)
+
         #Outputs bot movement
         self.game.ball.prediction_x = pos_global
         direction = -1 if  self.game.ball.position.x < self.game.players[0].position.x else 1

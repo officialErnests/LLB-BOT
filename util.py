@@ -476,7 +476,7 @@ class llb_bot:
         switch = self.game.players[0].prev_direction != direction
         self.game.players[0].prev_direction = direction
         hit = abs(self.game.players[0].position.x - pos_global) < 100
-        jump = self.game.players[0].position.y > self.game.ball.prediction_y
+        jump = self.game.players[0].position.y > self.game.ball.prediction_y + 10
         return direction, switch, hit, jump
 
     #Gets wheter somone is hitting the ball
@@ -522,7 +522,11 @@ class llb_bot:
                                 np.array([105, 244, 255]))
         self.get_color(start_img, img_hsv_value, 2,
                                 np.array([5, 229, 255]),
-                                np.array([5, 230, 255]))
+                                np.array([5, 230, 255])),
+        if not self.game.game_start:
+            self.get_color(start_img, img_hsv_value, 2,
+                                np.array([0, 0, 250]),
+                                np.array([0, 0, 250]))
 
     #Gets ball
     def get_color(self, start_img, hsv_img, ball_stage, mask_upper, mask_lower):
